@@ -1,5 +1,7 @@
 <template>
-  <div class="container">login done</div>
+  <div class="container">
+    <nav class="navbar"></nav>
+  </div>
 </template>
 
 <script>
@@ -18,5 +20,12 @@ export default {
 <style lang="scss" scoped>
 .container {
   @include container-base();
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 3rem;
+  }
 }
 </style>

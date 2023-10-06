@@ -19,6 +19,9 @@ const router = createRouter({
     {
       path: "/auth",
       component: AuthPage,
+      meta: {
+        requiredUnAuth: true,
+      },
       redirect: "/auth/login",
 
       children: [
@@ -50,9 +53,14 @@ const router = createRouter({
 
 router.beforeEach(function (to, from, next) {
   const requiredAuth = to.matched.some((record) => record.meta.requiredAuth);
+  const requiredUnAuth = to.matched.some(
+    (record) => record.meta.requiredUnAuth
+  );
 
   if (requiredAuth && !store.getters["auth/isLogin"]) {
     next("/auth/login");
+  } else if (requiredUnAuth && store.getters["auth/isLogin"]) {
+    next("/main");
   } else {
     next();
   }

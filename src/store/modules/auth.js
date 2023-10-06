@@ -4,7 +4,7 @@ export default {
     return {
       baseUrl: "http://127.0.0.1:5000",
       // 登录状态标记
-      isLogin: false,
+      isLogin: true,
       // communication state
       loading: false,
       error: {
@@ -57,6 +57,7 @@ export default {
           message: "",
           mode: mode,
         });
+        context.commit("setIsLogin", true);
         // context.commit("setError", {
         //   state: true,
         //   message: "network error",

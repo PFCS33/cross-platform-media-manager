@@ -48,6 +48,9 @@ export default {
       }
       if (!newVal.state) {
         ElMessage.success(`${newVal.mode} succeeded`);
+        if (state === "login") {
+          this.$router.push("/main");
+        }
       }
     },
   },
