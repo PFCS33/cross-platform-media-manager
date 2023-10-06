@@ -1,11 +1,19 @@
 <template>
   <div class="container">
-    <nav class="navbar"></nav>
+    <Sidebar class="sidebar"></Sidebar>
+    <div class="content-box">
+      <nav class="navbar"></nav>
+      <div class="content"></div>
+    </div>
   </div>
 </template>
 
 <script>
+import Sidebar from "@/components/project/Sidebar.vue";
 export default {
+  components: {
+    Sidebar,
+  },
   data() {
     return {};
   },
@@ -20,12 +28,19 @@ export default {
 <style lang="scss" scoped>
 .container {
   @include container-base();
-  .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
+  @include flex-box(row);
+  background-color: $secondary-color;
+
+  .content-box {
+    flex: 1 1 0;
+    background-color: $background-color;
+    border-radius: 2rem;
+    margin: 2rem 2rem 2rem 0rem;
+  }
+  .sidebar {
+    width: $sidebar-width;
     height: 100vh;
-    width: 3rem;
+    background-color: $secondary-color;
   }
 }
 </style>
