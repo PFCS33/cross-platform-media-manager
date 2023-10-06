@@ -1,5 +1,7 @@
 <template>
   <BaseCard class="card">
+    <img class="icon" src="/auth-button.png" alt="auth-botton" />
+
     <div class="title-box">
       <h1 class="title main-title">create an account</h1>
       <span class="title sub-title">Provide your details</span>
@@ -146,6 +148,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.icon {
+  width: 6rem;
+  height: 6rem;
+  position: absolute;
+  z-index: $z-middle;
+  top: -2rem;
+  left: -2rem;
+}
 .card {
   background-color: $background-color-grey;
   border-radius: 1.2rem;
