@@ -196,8 +196,12 @@ export default {
         border: none;
         padding-left: 1rem;
         font-size: 1.5rem;
+        transition: box-shadow 0.2s ease-in;
+
         &:focus {
-          outline: 2px solid $secondary-color;
+          // outline: 0.2rem solid $secondary-color;
+          outline: none;
+          box-shadow: 0 0 0 0.2rem $secondary-color;
         }
         &::placeholder {
           color: $muted-text-color;
