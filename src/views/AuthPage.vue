@@ -10,7 +10,12 @@
       </BaseCard>
     </div>
     <div class="half right"></div>
-    <LoginCard class="auth-card"></LoginCard>
+    <LoginCard class="auth-card" v-if="mode === 'login'"> </LoginCard>
+    <SignupCard class="auth-card" v-else-if="mode === 'signup'"> </SignupCard>
+    <changePWCard
+      class="auth-card"
+      v-else-if="mode === 'changePW'"
+    ></changePWCard>
   </div>
 </template>
 
@@ -18,6 +23,11 @@
 import LoginCard from "../components/auth/Login.vue";
 export default {
   components: { LoginCard },
+  provide() {
+    return {
+      changeAuthMode: this.changeAuthMode,
+    };
+  },
   data() {
     return {
       mode: "login",
@@ -26,6 +36,11 @@ export default {
   computed: {
     isLogin() {
       return this.$store.getters["auth/isLogin"];
+    },
+  },
+  method: {
+    changeAuthMode(mode) {
+      this.mode = mode;
     },
   },
 };

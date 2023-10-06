@@ -25,7 +25,7 @@
           name="password"
           placeholder="Password"
           v-model.trim="password.val"
-          pattern="(?=.*([a-zA-Z].*))(?=.*[0-9].*)[a-zA-Z0-9-*/+.~!@#$%^&*()]{8,16}$"
+          pattern="(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@&*\(\)_+\{\}:;<>,.?~\/\-]{8,16}"
           required
           ref="password"
           @blur="validatePassword"
@@ -36,7 +36,7 @@
         <router-link to="">Forgot Password</router-link>
       </div>
       <div class="button-box">
-        <BaseButton>Login</BaseButton>
+        <BaseButton @click="submitForm">Login</BaseButton>
       </div>
     </form>
     <div class="signup-box">
@@ -48,6 +48,7 @@
 
 <script>
 export default {
+  inject: ["changeAuthMode"],
   data() {
     return {
       email: {
@@ -61,6 +62,17 @@ export default {
       formIsValid: true,
     };
   },
+  watch: {
+    formIsValid(newVal) {
+      if (!newVal) {
+        ElMessage.warning(
+          "Sorry, at least one of the input was detected as out of specification"
+        );
+        setTimeout(() => ElMessage.warning("Please try again"), 500);
+        this.formIsValid = true;
+      }
+    },
+  },
   methods: {
     submitForm() {
       if (this.validateForm()) {
@@ -69,16 +81,12 @@ export default {
           password: this.password.val,
         };
         console.log(fromData);
+        ElMessage.success(`Login succeeded`);
         //  TODO: send data to server
       }
     },
     validateForm() {
-      if (
-        this.validateId() &&
-        this.validateEmail() &&
-        this.validatePassword() &&
-        this.validateConfirmPassword()
-      ) {
+      if (this.validateEmail() && this.validatePassword()) {
         return true;
       } else {
         this.formIsValid = false;
@@ -121,6 +129,7 @@ export default {
     flex: 0 1 15%;
     @include flex-box(column);
     gap: 0.8rem;
+    user-select: none;
     .title {
       align-self: center;
     }
@@ -180,6 +189,7 @@ export default {
       align-self: flex-end;
       display: flex;
       align-items: center;
+      user-select: none;
     }
     .button-box {
       flex: 1 1 25%;
@@ -199,6 +209,7 @@ export default {
     @include flex-box(row);
     gap: 1rem;
     justify-content: center;
+    user-select: none;
     span {
       color: $text-secondary-color;
     }
