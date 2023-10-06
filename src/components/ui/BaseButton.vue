@@ -1,8 +1,8 @@
 <template>
-  <button v-if="!link" :class="mode">
+  <button v-if="!link" :class="[mode, { inset: inset }]">
     <slot></slot>
   </button>
-  <router-link v-else :to="to" :class="mode">
+  <router-link v-else :to="to" :class="[mode, { inset: inset }]">
     <slot> </slot>
   </router-link>
 </template>
@@ -25,68 +25,49 @@ export default {
       required: false,
       default: "/",
     },
+    inset: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 button,
 a {
   /* font-size: 14px; */
-  font-size: 1.1vw;
+
   text-decoration: none;
   display: inline-block;
   padding: 0.75rem 1.5rem;
-
-  background: linear-gradient(91.58deg, #69c2a7 -8.01%, #5ad1ad 105.39%);
+  background-color: $secondary-color;
   border: none;
-  color: white;
+  color: $background-color;
   cursor: pointer;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
 }
 
 a:hover,
 a:active,
 button:hover,
 button:active {
-  background: linear-gradient(
-    119.06deg,
-    #3fdfac 10.71%,
-    #44e1bf 60.37%,
-    #46dfc3 103.14%
-  );
-  box-shadow: 0 0 0 #00000000, 0 0 0 #00000000,
-    inset 0.2rem 0.3rem 0.4rem #55b3c099;
+  color: $background-color-white;
+  background-color: $secondary-color-dark;
 }
 
-.transparent {
-  /* font-size: 12px; */
-  font-size: 0.9vw;
-  background-color: transparent;
-  border: none;
-  color: #3a0061;
-}
-.transparent:hover,
-.transparent:active {
-  background-color: transparent;
-  color: #270041;
+button.inset,
+a.inset {
+  color: $secondary-color;
+  background: $background-color;
 }
 
-.outline {
-  background-color: transparent;
-  border-color: #270041;
-  color: #270041;
-}
-
-.flat {
-  background-color: transparent;
-  color: #3a0061;
-  border: none;
-}
-
-.flat:hover,
-.flat:active,
-.outline:hover,
-.outline:active {
-  background-color: #edd2ff;
+button:hover.inset,
+button:active.inset {
+  background-color: $secondary-color;
+  color: $background-color;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0), 0 0 0 rgba(0, 0, 0, 0),
+    inset 0.3rem 0.5rem 0.4rem $secondary-color-dark;
 }
 </style>

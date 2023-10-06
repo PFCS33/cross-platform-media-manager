@@ -2,19 +2,19 @@ export default {
   namespaced: true,
   state() {
     return {
-      //   drawData: null,
+      // 登录状态标记
+      isLogin: false,
     };
   },
   getters: {
-    // drawData(state) {
-    //   return state.drawData;
-    // },
+    isLogin(state) {
+      return state.isLogin;
+    },
   },
   mutations: {
-    // setDrawData(state, payload) {
-    //   state.drawData = payload;
-    //   // console.log("in mitation:", state.drawData);
-    // },
+    setIsLogin(state, payload) {
+      state.isLogin = payload;
+    },
   },
   actions: {
     //     loadData(context, _payload) {

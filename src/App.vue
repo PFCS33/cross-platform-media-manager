@@ -10,6 +10,10 @@
 export default {};
 </script>
 
+<style lang="scss">
+@use "@/assets/styles/main.scss";
+</style>
+
 <style scoped>
 .route-enter-from {
   opacity: 0;

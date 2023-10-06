@@ -1,0 +1,218 @@
+<template>
+  <BaseCard class="card">
+    <div class="title-box">
+      <h1 class="title main-title">welcome</h1>
+      <span class="title sub-title">Login to your account</span>
+    </div>
+    <form class="login-box" @submit.prevent="submitData" novalidate>
+      <div class="input-box">
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          v-model.trim="email.val"
+          required
+          @blur="validateEmail"
+          ref="email"
+        />
+        <p class="error-msg" v-if="!email.isValid">Illegal Input</p>
+      </div>
+      <div class="input-box">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Password"
+          v-model.trim="password.val"
+          pattern="(?=.*([a-zA-Z].*))(?=.*[0-9].*)[a-zA-Z0-9-*/+.~!@#$%^&*()]{8,16}$"
+          required
+          ref="password"
+          @blur="validatePassword"
+        />
+        <p class="error-msg" v-if="!password.isValid">Illegal Input</p>
+      </div>
+      <div class="link-box">
+        <router-link to="">Forgot Password</router-link>
+      </div>
+      <div class="button-box">
+        <BaseButton>Login</BaseButton>
+      </div>
+    </form>
+    <div class="signup-box">
+      <span>Dont't have an account?</span>
+      <router-link to=""> Signup </router-link>
+    </div>
+  </BaseCard>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      email: {
+        val: "",
+        isValid: true,
+      },
+      password: {
+        val: "",
+        isValid: true,
+      },
+      formIsValid: true,
+    };
+  },
+  methods: {
+    submitForm() {
+      if (this.validateForm()) {
+        const fromData = {
+          email: this.email.val,
+          password: this.password.val,
+        };
+        console.log(fromData);
+        //  TODO: send data to server
+      }
+    },
+    validateForm() {
+      if (
+        this.validateId() &&
+        this.validateEmail() &&
+        this.validatePassword() &&
+        this.validateConfirmPassword()
+      ) {
+        return true;
+      } else {
+        this.formIsValid = false;
+        return false;
+      }
+    },
+    validateEmail() {
+      if (!this.$refs.email.checkValidity()) {
+        this.email.isValid = false;
+        return false;
+      } else {
+        this.email.isValid = true;
+        return true;
+      }
+    },
+    validatePassword() {
+      if (!this.$refs.password.checkValidity()) {
+        this.password.isValid = false;
+        return false;
+      } else {
+        this.password.isValid = true;
+        return true;
+      }
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.card {
+  background-color: $background-color-grey;
+  border-radius: 1.2rem;
+
+  @include flex-box(column);
+  gap: 2rem;
+
+  .title-box {
+    padding-top: 10%;
+    align-self: center;
+    flex: 0 1 15%;
+    @include flex-box(column);
+    gap: 0.8rem;
+    .title {
+      align-self: center;
+    }
+    .main-title {
+      align-self: center;
+      text-transform: uppercase;
+      letter-spacing: 0.6rem;
+      font-size: 3rem;
+    }
+    .sub-title {
+      color: $text-secondary-color;
+    }
+  }
+  .login-box {
+    flex: 1 1 75%;
+    @include flex-box(column);
+
+    .input-box {
+      flex: 1 1 33%;
+      padding: 1.5rem 5rem;
+      input {
+        width: 100%;
+        height: 100%;
+        border-radius: 5rem;
+        border: none;
+        padding-left: 1rem;
+        font-size: 1.5rem;
+
+        &:focus {
+          outline: 2px solid $secondary-color;
+        }
+        &::placeholder {
+          color: $muted-text-color;
+          opacity: 1; /* Firefox requires this to adjust color */
+        }
+
+        /* Internet Explorer, Edge */
+        &:-ms-input-placeholder {
+          color: $muted-text-color;
+        }
+
+        /* Safari < 10.1 */
+        &::-webkit-input-placeholder {
+          color: $muted-text-color;
+        }
+      }
+      .error-msg {
+        color: $red;
+        padding-top: 0.2rem;
+        padding-left: 1rem;
+      }
+    }
+    .link-box {
+      flex: 1 1 10%;
+      padding-right: 5rem;
+
+      align-self: flex-end;
+      display: flex;
+      align-items: center;
+    }
+    .button-box {
+      flex: 1 1 25%;
+      padding: 0rem 5rem;
+      padding-top: 1.5rem;
+      button {
+        width: 100%;
+        height: 100%;
+        border-radius: 5rem;
+
+        font-size: 1.6rem;
+      }
+    }
+  }
+  .signup-box {
+    flex: 0 1 10%;
+    @include flex-box(row);
+    gap: 1rem;
+    justify-content: center;
+    span {
+      color: $text-secondary-color;
+    }
+  }
+  a {
+    display: inline-block;
+    text-decoration: none;
+    color: $secondary-color;
+    transition: transform 0.2s ease-out;
+
+    &:hover {
+      color: $secondary-color-dark;
+      transform: scale(1.05);
+    }
+  }
+}
+</style>
