@@ -1,10 +1,10 @@
 <template>
   <BaseCard class="card">
     <div class="title-box">
-      <h1 class="title main-title">welcome</h1>
-      <span class="title sub-title">Login to your account</span>
+      <h1 class="title main-title">create an account</h1>
+      <span class="title sub-title">Provide your details</span>
     </div>
-    <form class="login-box" @submit.prevent="submitData" novalidate>
+    <form class="signup-box" @submit.prevent="submitData" novalidate>
       <div class="input-box">
         <input
           type="email"
@@ -32,16 +32,28 @@
         />
         <p class="error-msg" v-if="!password.isValid">Illegal Input</p>
       </div>
-      <div class="link-box">
-        <router-link to="">Forgot Password</router-link>
+      <div class="input-box">
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          placeholder="Confirm your Password"
+          v-model.trim="confirmPassword.val"
+          pattern="(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@&*\(\)_+\{\}:;<>,.?~\/\-]{8,16}"
+          required
+          ref="confirmPassword"
+          @blur="validateConfirmPassword"
+        />
+        <p class="error-msg" v-if="!confirmPassword.isValid">Illegal Input</p>
       </div>
       <div class="button-box">
-        <BaseButton @click="submitForm">Login</BaseButton>
+        <BaseButton @click="submitForm">Signup</BaseButton>
       </div>
     </form>
-    <div class="signup-box">
-      <span>Dont't have an account?</span>
-      <router-link :to="{ name: 'signup' }"> Signup </router-link>
+
+    <div class="link-box">
+      <span>Already a member?</span>
+      <router-link :to="{ name: 'login' }"> Login </router-link>
     </div>
   </BaseCard>
 </template>
@@ -58,10 +70,13 @@ export default {
         val: "",
         isValid: true,
       },
+      confirmPassword: {
+        val: "",
+        isValid: true,
+      },
       formIsValid: true,
     };
   },
-  computed: {},
   watch: {
     formIsValid(newVal) {
       if (!newVal) {
@@ -80,21 +95,25 @@ export default {
           email: this.email.val,
           password: this.password.val,
         };
-
-        this.$store.dispatch("auth/uploadData", {
-          data: fromData,
-          mode: "login",
-        });
+        console.log(fromData);
+        ElMessage.success(`Signup succeeded`);
+        this.$router.push("/auth/login");
+        //  TODO: send data to server
       }
     },
     validateForm() {
-      if (this.validateEmail() && this.validatePassword()) {
+      if (
+        this.validateEmail() &&
+        this.validatePassword() &&
+        this.validateConfirmPassword()
+      ) {
         return true;
       } else {
         this.formIsValid = false;
         return false;
       }
     },
+
     validateEmail() {
       if (!this.$refs.email.checkValidity()) {
         this.email.isValid = false;
@@ -110,6 +129,15 @@ export default {
         return false;
       } else {
         this.password.isValid = true;
+        return true;
+      }
+    },
+    validateConfirmPassword() {
+      if (this.confirmPassword.val !== this.password.val) {
+        this.confirmPassword.isValid = false;
+        return false;
+      } else {
+        this.confirmPassword.isValid = true;
         return true;
       }
     },
@@ -138,19 +166,18 @@ export default {
     .main-title {
       align-self: center;
       text-transform: uppercase;
-      letter-spacing: 0.6rem;
+      letter-spacing: 0.3rem;
       font-size: 3rem;
     }
     .sub-title {
       color: $text-secondary-color;
     }
   }
-  .login-box {
+  .signup-box {
     flex: 1 1 75%;
     @include flex-box(column);
-
     .input-box {
-      flex: 1 1 33%;
+      flex: 1 1 25%;
       padding: 1.5rem 5rem;
       input {
         width: 100%;
@@ -159,7 +186,6 @@ export default {
         border: none;
         padding-left: 1rem;
         font-size: 1.5rem;
-
         &:focus {
           outline: 2px solid $secondary-color;
         }
@@ -178,20 +204,6 @@ export default {
           color: $muted-text-color;
         }
       }
-      .error-msg {
-        color: $red;
-        padding-top: 0.2rem;
-        padding-left: 1rem;
-      }
-    }
-    .link-box {
-      flex: 1 1 10%;
-      padding-right: 5rem;
-
-      align-self: flex-end;
-      display: flex;
-      align-items: center;
-      user-select: none;
     }
     .button-box {
       flex: 1 1 25%;
@@ -205,8 +217,13 @@ export default {
         font-size: 1.6rem;
       }
     }
+    .error-msg {
+      color: $red;
+      padding-top: 0.2rem;
+      padding-left: 1rem;
+    }
   }
-  .signup-box {
+  .link-box {
     flex: 0 1 10%;
     @include flex-box(row);
     gap: 1rem;

@@ -1,5 +1,9 @@
 <template>
-  <div class="container">
+  <div
+    class="container"
+    v-loading="loading"
+    element-loading-text="Uploading..."
+  >
     <div class="half left">
       <BaseCard inset class="slogan">
         <div>An</div>
@@ -10,37 +14,41 @@
       </BaseCard>
     </div>
     <div class="half right"></div>
-    <LoginCard class="auth-card" v-if="mode === 'login'"> </LoginCard>
-    <SignupCard class="auth-card" v-else-if="mode === 'signup'"> </SignupCard>
-    <changePWCard
-      class="auth-card"
-      v-else-if="mode === 'changePW'"
-    ></changePWCard>
+    <router-view v-slot="slotProps">
+      <transition name="route" mode="out-in">
+        <component :is="slotProps.Component" class="auth-card"> </component>
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script>
-import LoginCard from "../components/auth/Login.vue";
 export default {
-  components: { LoginCard },
-  provide() {
-    return {
-      changeAuthMode: this.changeAuthMode,
-    };
-  },
   data() {
-    return {
-      mode: "login",
-    };
+    return {};
   },
   computed: {
     isLogin() {
       return this.$store.getters["auth/isLogin"];
     },
+    loading() {
+      return this.$store.getters["auth/loading"];
+    },
+
+    error() {
+      return this.$store.getters["auth/error"];
+    },
   },
-  method: {
-    changeAuthMode(mode) {
-      this.mode = mode;
+  method: {},
+  watch: {
+    error(newVal) {
+      if (newVal.state) {
+        ElMessage.error(`Error: ${newVal.message}`);
+        setTimeout(() => ElMessage.error("Please try again"), 500);
+      }
+      if (!newVal.state) {
+        ElMessage.success(`${newVal.mode} succeeded`);
+      }
     },
   },
 };
@@ -100,6 +108,22 @@ export default {
     width: 35vw;
     height: 70vh;
     z-index: $z-middle;
+  }
+}
+</style>
+<style lang="scss" scoped>
+@include router-animation();
+</style>
+
+<style lang="scss">
+.el-loading-mask {
+  z-index: $z-top;
+  --el-color-primary: $secondary-color;
+  .el-loading-spinner {
+    stroke: $secondary-color;
+  }
+  .el-loading-text {
+    color: $text-secondary-color;
   }
 }
 </style>
