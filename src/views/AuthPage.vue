@@ -48,7 +48,7 @@ export default {
       }
       if (!newVal.state) {
         ElMessage.success(`${newVal.mode} succeeded`);
-        if (state === "login") {
+        if (newVal.mode === "login") {
           this.$router.push("/main");
         }
       }
