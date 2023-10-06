@@ -9,7 +9,7 @@ import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/cross-platform-media-manager/",
+  // base: "/cross-platform-media-manager/",
   plugins: [
     vue(),
     AutoImport({
