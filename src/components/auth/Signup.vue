@@ -39,7 +39,7 @@
           type="password"
           id="confirmPassword"
           name="confirmPassword"
-          placeholder="Confirm your Password"
+          placeholder="Confirm your password"
           v-model.trim="confirmPassword.val"
           pattern="(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9!@&*\(\)_+\{\}:;<>,.?~\/\-]{8,16}"
           required

@@ -6,8 +6,13 @@ import AuthPage from "@/views/AuthPage.vue";
 import NotFoundPage from "@/views/NotFoundPage.vue";
 
 import LoginCard from "@/components/auth/Login.vue";
-
 import SignupCard from "@/components/auth/Signup.vue";
+import PlatformPage from "@/components/project/Platform.vue";
+import PostPublishPage from "@/components/project/PostPublish.vue";
+import HistoryPage from "@/components/project/History.vue";
+import StatisticPage from "./components/project/Statistic.vue";
+import DraftPage from "@/components/project/DraftBot.vue";
+import ConfigPage from "./components/project/Config.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -43,6 +48,38 @@ const router = createRouter({
       meta: {
         requiredAuth: true,
       },
+      children: [
+        {
+          path: "platform",
+          component: PlatformPage,
+          name: "platform",
+        },
+        {
+          path: "publish",
+          component: PostPublishPage,
+          name: "publish",
+        },
+        {
+          path: "history",
+          component: HistoryPage,
+          name: "history",
+        },
+        {
+          path: "statistic",
+          component: StatisticPage,
+          name: "statistic",
+        },
+        {
+          path: "draft",
+          component: DraftPage,
+          name: "draft",
+        },
+        {
+          path: "config",
+          component: ConfigPage,
+          name: "config",
+        },
+      ],
     },
     {
       path: "/:notFound(.*)",
