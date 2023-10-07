@@ -1,3 +1,3 @@
 <template>
-  <p>PostPublish</p>
+  <h1>PostPublish</h1>
 </template>

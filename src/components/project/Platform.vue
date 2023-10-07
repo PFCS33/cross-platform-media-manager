@@ -1,3 +1,3 @@
 <template>
-  <p>Platform</p>
+  <h1>Platform</h1>
 </template>

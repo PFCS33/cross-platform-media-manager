@@ -15,8 +15,8 @@ $text-color: #555;
 $text-secondary-color: #888;
 $heading-color: #111;
 $link-color: $primary-color;
-
 $muted-text-color: #ccc;
+$muted-muted-text-color: #888;
 $line-height-regular: 1;
 
 // border
@@ -35,7 +35,10 @@ $z-absolute-top: 99;
 
 /* other colors -------------------------------------------------------------------------- */
 $red: #f4acb7;
+
+/* sidebar -------------------------------------------------------------------------- */
 $sidebar-width: 15rem;
 $icon-size-regular: 2.6rem;
 $icon-size-small: 2.4rem;
-$icon-color-grey: #aaa;
+$icon-color-grey: #ccc;
+$avatar-size: 3.2rem;
