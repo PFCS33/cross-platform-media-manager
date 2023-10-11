@@ -48,8 +48,12 @@ export default {
       }
       if (!newVal.state) {
         ElMessage.success(`${newVal.mode} succeeded`);
+        console.log(2);
         if (newVal.mode === "login") {
+          this.$store.commit("auth/setIsLogin", true);
           this.$router.push("/main");
+        } else if (newVal.mode === "register") {
+          this.$router.push("/auth/login");
         }
       }
     },

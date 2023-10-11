@@ -99,6 +99,12 @@ router.beforeEach(function (to, from, next) {
     next("/auth/login");
   } else if (requiredUnAuth && store.getters["auth/isLogin"]) {
     next("/main");
+  } else if (to.path === "/main/platform" && to.query.code) {
+    // TODO 提取code并发送到后端
+    const code = to.query.code;
+    console.log(code);
+
+    next("/main/platform");
   } else {
     next();
   }

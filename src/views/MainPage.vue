@@ -2,14 +2,11 @@
   <div class="container">
     <Sidebar class="sidebar"></Sidebar>
     <div class="content-box">
-      <nav class="navbar"></nav>
-      <div class="content">
-        <router-view v-slot="slotProps">
-          <transition name="route" mode="out-in">
-            <component :is="slotProps.Component"> </component>
-          </transition>
-        </router-view>
-      </div>
+      <router-view v-slot="slotProps">
+        <transition name="route" mode="out-in">
+          <component :is="slotProps.Component"> </component>
+        </transition>
+      </router-view>
     </div>
   </div>
 </template>
@@ -39,9 +36,10 @@ export default {
 
   .content-box {
     flex: 1 1 0;
-    background-color: $background-color;
+    background-color: $background-color-grey;
     border-radius: 2rem;
     margin: 2rem 2rem 2rem 0rem;
+    overflow: hidden;
   }
 }
 </style>

@@ -2,7 +2,7 @@
   <div :class="['sidebar', { expand: sidebarExpandedFlag }]">
     <div class="avatar-box">
       <div class="user-info">
-        <img src="/logo.svg" class="avatar" />
+        <img src="/vite.svg" class="avatar" />
         <span class="username">{{ userName }}</span>
       </div>
 
@@ -143,6 +143,7 @@ export default {
       justify-content: start;
       gap: 1rem;
       .avatar {
+        min-width: $avatar-size;
         width: $avatar-size;
         height: $avatar-size;
       }
@@ -165,8 +166,8 @@ export default {
       }
       .arrow-icon {
         transition: transform 0.2s ease-out;
-        width: $icon-size-small;
-        height: $icon-size-small;
+        @include icon-style($icon-size-small);
+
         align-self: center;
         &:hover {
           fill: $primary-color;
@@ -194,10 +195,8 @@ export default {
         transition: transform 0.2s ease-out, color 0.2s ease-out;
       }
       .icon {
-        width: $icon-size-regular;
-        height: $icon-size-regular;
+        @include icon-style();
         min-width: $icon-size-regular;
-        min-height: $icon-size-regular;
       }
       &:hover {
         .icon {
@@ -240,7 +239,7 @@ export default {
 
   .router-link-active {
     .icon {
-      fill: $primary-color;
+      fill: $primary-color !important;
       transform: scale(1.2);
     }
     .menu-text {

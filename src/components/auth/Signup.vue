@@ -97,10 +97,11 @@ export default {
           email: this.email.val,
           password: this.password.val,
         };
-        console.log(fromData);
-        ElMessage.success(`Signup succeeded`);
-        this.$router.push("/auth/login");
-        //  TODO: send data to server
+
+        this.$store.dispatch("auth/uploadData", {
+          data: fromData,
+          mode: "register",
+        });
       }
     },
     validateForm() {

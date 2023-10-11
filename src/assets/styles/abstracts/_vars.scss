@@ -2,7 +2,8 @@
 // main
 $primary-color: #71e29a;
 $secondary-color: #64748b;
-$primary-color-dark: #41aa67;
+$primary-color-dark: #56aa75;
+
 $secondary-color-dark: #334155;
 
 // bg
@@ -16,7 +17,7 @@ $text-secondary-color: #888;
 $heading-color: #111;
 $link-color: $primary-color;
 $muted-text-color: #ccc;
-$muted-muted-text-color: #888;
+
 $line-height-regular: 1;
 
 // border
@@ -38,7 +39,8 @@ $red: #f4acb7;
 
 /* sidebar -------------------------------------------------------------------------- */
 $sidebar-width: 15rem;
+$icon-size-large: 3.5rem;
 $icon-size-regular: 2.6rem;
 $icon-size-small: 2.4rem;
 $icon-color-grey: #ccc;
-$avatar-size: 3.2rem;
+$avatar-size: $icon-size-regular;
