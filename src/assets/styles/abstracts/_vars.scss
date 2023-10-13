@@ -1,13 +1,13 @@
 /* color-------------------------------------------------------------------------- */
 // main
 $primary-color: #71e29a;
-$secondary-color: #64748b;
-$primary-color-dark: #56aa75;
+$primary-color-dark: #32a85d;
 
+$secondary-color: #64748b;
 $secondary-color-dark: #334155;
 
 // bg
-$background-color-grey: #e8e8e8;
+$background-color-gray: #e8e8e8;
 $background-color: #f4f4f4;
 $background-color-white: #fff;
 
@@ -22,6 +22,7 @@ $line-height-regular: 1;
 
 // border
 $border-color: #e1e1e1;
+$border-color-gray: #aaa;
 
 /* font -------------------------------------------------------------------------- */
 $font-primary: "Lato", Arial, sans-serif;
@@ -42,5 +43,5 @@ $sidebar-width: 15rem;
 $icon-size-large: 3.5rem;
 $icon-size-regular: 2.6rem;
 $icon-size-small: 2.4rem;
-$icon-color-grey: #ccc;
+$icon-color-gray: #ccc;
 $avatar-size: $icon-size-regular;

@@ -158,7 +158,7 @@ export default {
   left: -2rem;
 }
 .card {
-  background-color: $background-color-grey;
+  background-color: $background-color-gray;
   border-radius: 1.2rem;
 
   @include flex-box(column);

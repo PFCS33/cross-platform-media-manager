@@ -129,7 +129,7 @@ export default {
 }
 .card {
   position: relative;
-  background-color: $background-color-grey;
+  background-color: $background-color-gray;
   border-radius: 1.2rem;
 
   @include flex-box(column);

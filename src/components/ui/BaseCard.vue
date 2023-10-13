@@ -1,5 +1,5 @@
 <template>
-  <div :class="['mode', { inset: inset }]">
+  <div :class="[mode, { inset: inset }]">
     <slot></slot>
   </div>
 </template>

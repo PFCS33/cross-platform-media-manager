@@ -36,7 +36,8 @@ export default {
 
   .content-box {
     flex: 1 1 0;
-    background-color: $background-color-grey;
+    background-color: $background-color-gray;
+    box-shadow: 0.3rem 0.3rem 0.5rem 0.2rem rgba($secondary-color, 0.3) inset;
     border-radius: 2rem;
     margin: 2rem 2rem 2rem 0rem;
     overflow: hidden;

@@ -157,6 +157,7 @@ export default {
     .menu-toggle-wrapper {
       @include flex-box(row);
       justify-content: flex-end;
+      align-items: center;
       position: relative;
       top: 0;
 
@@ -191,7 +192,7 @@ export default {
       font-size: 1.4rem;
 
       .menu-text {
-        color: $icon-color-grey;
+        color: $icon-color-gray;
         transition: transform 0.2s ease-out, color 0.2s ease-out;
       }
       .icon {
@@ -233,7 +234,7 @@ export default {
   .icon,
   .arrow-icon {
     cursor: pointer;
-    fill: $icon-color-grey;
+    fill: $icon-color-gray;
     transition: transform 0.2s ease-out, fill 0.2s ease-out;
   }
 
@@ -258,7 +259,7 @@ export default {
       }
       .menu-toggle-wrapper {
         position: relative;
-        top: -$avatar-size;
+        top: -$avatar-size - 0.25rem;
 
         .arrow-wrapper {
           transform: rotate(-180deg);
