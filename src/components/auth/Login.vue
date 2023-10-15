@@ -17,7 +17,9 @@
           @blur="validateEmail"
           ref="email"
         />
-        <p class="error-msg" v-if="!email.isValid">Illegal Input</p>
+        <transition name="form-msg">
+          <p class="error-msg" v-if="!email.isValid">Illegal Input</p>
+        </transition>
       </div>
       <div class="input-box">
         <input
@@ -31,7 +33,9 @@
           ref="password"
           @blur="validatePassword"
         />
-        <p class="error-msg" v-if="!password.isValid">Illegal Input</p>
+        <transition name="form-msg">
+          <p class="error-msg" v-if="!password.isValid">Illegal Input</p>
+        </transition>
       </div>
       <div class="link-box">
         <router-link to="">Forgot Password</router-link>
@@ -119,6 +123,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include form-msg();
 .icon {
   width: 6rem;
   height: 6rem;

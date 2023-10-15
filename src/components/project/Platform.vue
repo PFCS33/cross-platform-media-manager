@@ -10,6 +10,7 @@
         ]"
       >
         <svgIcon iconName="overview" class="icon"></svgIcon>
+        <span class="text">Overview</span>
       </div>
       <div
         @click="changeSelectedPlatform('weibo')"
@@ -20,6 +21,7 @@
         ]"
       >
         <svgIcon iconName="weibo" class="icon"></svgIcon>
+        <span class="text">Weibo</span>
       </div>
       <div
         @click="changeSelectedPlatform('x')"
@@ -32,6 +34,7 @@
         ]"
       >
         <svgIcon iconName="x" class="icon"></svgIcon>
+        <span class="text">X</span>
       </div>
       <div
         @click="changeSelectedPlatform('facebook')"
@@ -42,6 +45,7 @@
         ]"
       >
         <svgIcon iconName="facebook" class="icon"></svgIcon>
+        <span class="text">Facebook</span>
       </div>
       <div
         @click="changeSelectedPlatform('instogram')"
@@ -52,6 +56,7 @@
         ]"
       >
         <svgIcon iconName="instogram" class="icon"></svgIcon>
+        <span class="text">Instogram</span>
       </div>
     </div>
     <div class="content">
@@ -67,7 +72,7 @@
               <svgIcon :iconName="info.platform" class="icon"></svgIcon>
               <span class="username">@ {{ info.username }}</span>
               <div class="flex-div"></div>
-              <BaseButton class="button">Logout</BaseButton>
+              <BaseButton class="button backward">Logout</BaseButton>
             </div>
           </div>
         </transition-group>
@@ -86,24 +91,59 @@
               <span class="username">{{ info.username }}</span>
               <div class="flex-div"></div>
               <div class="button-box">
-                <BaseButton class="button">Login</BaseButton>
-                <BaseButton class="button">Delete</BaseButton>
+                <BaseButton class="button forward">Login</BaseButton>
+                <BaseButton class="button backward">Delete</BaseButton>
               </div>
             </div>
           </div>
         </transition-group>
       </div>
     </div>
+    <div class="login-btn">
+      <SvgIcon iconName="add" class="icon" @click="openDialog"></SvgIcon>
+    </div>
+    <el-dialog
+      v-model="dialogFormVisible"
+      title="Get Authorization"
+      :show-close="false"
+      class="platform"
+    >
+      <div class="form">
+        <span>Select a Platform</span>
+        <el-select v-model="platformAdded" placeholder="Platform">
+          <el-option
+            v-for="platform in platforms"
+            :key="platform"
+            :label="capitalizeFirstLetter(platform)"
+            :value="platform"
+          >
+            <SvgIcon :iconName="platform" class="icon"></SvgIcon>
+            <span>{{ capitalizeFirstLetter(platform) }}</span>
+          </el-option>
+        </el-select>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <BaseButton class="button confirm" @click="submitAccountBinding">
+            Confirm
+          </BaseButton>
+          <BaseButton class="button cancle" @click="dialogFormVisible = false"
+            >Cancel</BaseButton
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import BaseButton from "../ui/BaseButton.vue";
-
 export default {
   data() {
     return {
       selectedPlatform: "overview",
+      dialogFormVisible: false,
+      platforms: ["weibo", "x", "facebook", "instogram"],
+      platformAdded: null,
     };
   },
   computed: {
@@ -134,6 +174,9 @@ export default {
     },
   },
   methods: {
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
     changeSelectedPlatform(platform) {
       this.selectedPlatform = platform;
     },
@@ -143,11 +186,23 @@ export default {
         "https://api.weibo.com/oauth2/authorize?client_id=1954849401&redirect_uri=https://api.weibo.com/oauth2/default.html&response_type=code";
       window.location.href = authURL;
     },
+    openDialog() {
+      this.dialogFormVisible = true;
+    },
+    submitAccountBinding() {
+      const platform = this.platformAdded;
+
+      if (!platform) {
+        ElMessage.warning("please select a platform");
+      } else {
+        this.dialogFormVisible = false;
+        // TODO: 账号绑定请求发送
+      }
+    },
   },
   mounted() {
     this.$store.dispatch("platform/getAccountInfo");
   },
-  components: { BaseButton },
 };
 </script>
 
@@ -163,28 +218,41 @@ export default {
     // border-radius: 1rem;
     // padding: 0rem 1rem;
 
-    width: 10rem;
-
+    width: $icon-size-large + 1rem * 9;
+    user-select: none;
     @include flex-box(column);
     justify-content: start;
     gap: 1rem;
     padding-top: 1rem;
-    .icon {
-      @include icon-style($icon-size-large);
-      transition: fill 0.2s ease-out;
-    }
+
     .inner-box {
+      @include flex-box(row);
+      align-items: center;
+      gap: 0.8rem;
+
       background-color: $secondary-color;
       padding: 0.5rem;
       border-radius: 1.2rem;
       box-shadow: 0.15rem 0.3rem 0.2rem 0rem rgba(0, 0, 0, 0.26);
       transition: background-color 0.2s ease-out, box-shadow 0.2s ease-out;
+      .icon {
+        @include icon-style($icon-size-large);
+        transition: fill 0.2s ease-out;
+      }
 
+      .text {
+        font-size: 1.4rem;
+        transition: color 0.2s ease-out;
+        color: $icon-color-gray;
+      }
       &:hover {
         cursor: pointer;
         background-color: $secondary-color-dark;
         .icon {
           fill: $primary-color;
+        }
+        .text {
+          color: $primary-color;
         }
       }
 
@@ -193,6 +261,9 @@ export default {
         box-shadow: inset 0.3rem 0.3rem 0.5rem 0.4rem rgba(0, 0, 0, 0.423);
         .icon {
           fill: $primary-color;
+        }
+        .text {
+          color: $primary-color;
         }
       }
     }
@@ -262,7 +333,7 @@ export default {
 
             &:hover {
               transform: scaleY(1.05) scaleX(1.02);
-              box-shadow: 0.2rem 0.1rem 0.5rem rgba(0, 0, 0, 0.2);
+              box-shadow: 0.2rem 0.2rem 0.4rem 0rem rgba(0, 0, 0, 0.2);
             }
 
             .icon {
@@ -277,6 +348,13 @@ export default {
 
             .button {
               border-radius: 1.5rem;
+
+              &.forward {
+                background-color: $third-color;
+                &:hover {
+                  background-color: $third-color-dark;
+                }
+              }
             }
           }
         }
@@ -284,12 +362,12 @@ export default {
     }
     .loggedBox {
       .icon {
-        @include icon-style($icon-size-large, $secondary-color-dark);
+        @include icon-style($icon-size-large, $secondary-color);
       }
     }
     .unloggedBox {
       .icon {
-        @include icon-style($icon-size-large, rgba($secondary-color, 0.6));
+        @include icon-style($icon-size-large, rgba($secondary-color, 0.3));
       }
       .button-box {
         @include flex-box(row);
@@ -304,9 +382,95 @@ export default {
       border-radius: 5rem;
     }
   }
+
+  .login-btn {
+    position: fixed;
+    bottom: 6%;
+    right: 4%;
+    .icon {
+      @include icon-style($icon-size-large, $third-color);
+      transition: fill 0.2s ease-out;
+      cursor: pointer;
+      &:hover {
+        fill: $third-color-dark;
+      }
+    }
+  }
 }
 </style>
 
 <style lang="scss" scoped>
 @include list-animation();
+</style>
+
+<style lang="scss">
+.el-dialog.platform {
+  width: 30%;
+  background-color: $secondary-color-dark;
+  --el-color-primary: #{$primary-color};
+  border-radius: 1rem;
+  .el-dialog__header {
+    user-select: none;
+    .el-dialog__title {
+      color: $background-color;
+    }
+  }
+  .el-dialog__body {
+    padding-top: 1.8rem;
+    padding-bottom: 3rem;
+
+    .form {
+      @include flex-box(column);
+      gap: 1rem;
+      width: 98%;
+
+      span {
+        font-size: 1.3rem;
+        color: $background-color-gray;
+      }
+    }
+  }
+  .dialog-footer {
+    @include flex-box(row);
+    justify-content: flex-end;
+    gap: 1rem;
+    .button {
+      border-radius: 2rem;
+    }
+    .confirm {
+      background-color: $third-color;
+      &:hover {
+        background-color: $third-color-dark;
+      }
+    }
+    .cancle {
+    }
+  }
+}
+.el-select-dropdown {
+  --el-color-primary: #{$primary-color};
+  background-color: $secondary-color;
+  .el-select-dropdown__item {
+    background-color: $secondary-color;
+    color: $icon-color-gray;
+    @include flex-box(row);
+    align-items: center;
+    gap: 0.8rem;
+    transition: background-color 0.1s ease-out, color 0.1s ease-out,
+      fill 0.1s ease-out;
+    .icon {
+      @include icon-style($icon-size-small);
+      align-items: center;
+    }
+
+    &.hover,
+    &.selected {
+      background-color: $secondary-color-dark;
+      color: $primary-color;
+      .icon {
+        fill: $primary-color;
+      }
+    }
+  }
+}
 </style>

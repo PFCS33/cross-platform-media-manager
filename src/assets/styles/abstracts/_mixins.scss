@@ -44,7 +44,7 @@
   .list-move, /* apply transition to moving elements */
   .list-enter-active,
   .list-leave-active {
-    transition: all 1s ease;
+    transition: all 0.3s ease;
   }
 
   .list-enter-from {
@@ -65,5 +65,30 @@
      animations can be calculated correctly. */
   .list-leave-active {
     position: absolute;
+  }
+}
+
+@mixin form-msg() {
+  .form-msg-enter-from {
+    opacity: 0;
+    transform: translateY(-2rem);
+  }
+  .form-msg-leave-to {
+    opacity: 0;
+    transform: translateY(-2rem);
+  }
+
+  .form-msg-enter-to,
+  .form-msg-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .form-msg-enter-active {
+    transition: all 0.1s ease-out;
+  }
+
+  .form-msg-leave-active {
+    transition: all 0.1s ease-in;
   }
 }
