@@ -45,10 +45,9 @@ export default {
       if (newVal.state) {
         ElMessage.error(`Error: ${newVal.message}`);
         setTimeout(() => ElMessage.error("Please try again"), 500);
-      }
-      if (!newVal.state) {
+      } else {
         ElMessage.success(`${newVal.mode} succeeded`);
-        console.log(2);
+
         if (newVal.mode === "login") {
           this.$store.commit("auth/setIsLogin", true);
           this.$router.push("/main");

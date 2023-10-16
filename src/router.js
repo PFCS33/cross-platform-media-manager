@@ -3,6 +3,7 @@ import store from "./store/index.js";
 
 import MainPage from "@/views/MainPage.vue";
 import AuthPage from "@/views/AuthPage.vue";
+import RedirectPage from "@/views/RedirectPage.vue";
 import NotFoundPage from "@/views/NotFoundPage.vue";
 
 import LoginCard from "@/components/auth/Login.vue";
@@ -83,6 +84,11 @@ const router = createRouter({
       ],
     },
     {
+      path: "/redirect",
+      component: RedirectPage,
+      name: "redirect",
+    },
+    {
       path: "/:notFound(.*)",
       component: NotFoundPage,
     },
@@ -99,12 +105,17 @@ router.beforeEach(function (to, from, next) {
     next("/auth/login");
   } else if (requiredUnAuth && store.getters["auth/isLogin"]) {
     next("/main");
-  } else if (to.path === "/main/platform" && to.query.code) {
-    // TODO 提取code并发送到后端
+  } else if (to.path === "/redirect") {
     const code = to.query.code;
-    console.log(code);
-
-    next("/main/platform");
+    window.opener.postMessage(
+      { status: "success", code: code },
+      "http://localhost:5173/cross-platform-media-manager/#/main/platform"
+    );
+    window.close();
+    // store.dispatch("platform/postAuthCode", {
+    //   code: code,
+    // });
+    // next("/main/platform");
   } else {
     next();
   }

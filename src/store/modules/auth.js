@@ -1,3 +1,5 @@
+import { fetchAuthData } from "@/services/fetchData";
+
 export default {
   namespaced: true,
   state() {
@@ -12,9 +14,17 @@ export default {
         message: "",
         mode: "",
       },
+
+      userInfo: {
+        username: "Alex",
+        user_id: 1,
+      },
     };
   },
   getters: {
+    userInfo(state) {
+      return state.userInfo;
+    },
     isLogin(state) {
       return state.isLogin;
     },
@@ -29,6 +39,9 @@ export default {
     },
   },
   mutations: {
+    setUserInfo(state, payload) {
+      state.userInfo = payload;
+    },
     setIsLogin(state, payload) {
       state.isLogin = payload;
     },
@@ -41,7 +54,6 @@ export default {
   },
   actions: {
     uploadData(context, payload) {
-      console.log(payload);
       const data = {
         username: payload.data.email,
         password: payload.data.password,
@@ -67,42 +79,12 @@ export default {
       //   // });
       /* -------------------------------------------------------------------------- */
       // }, 500);
-      fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then(async (response) => {
-          if (!response.ok) {
-            return response.json().then((data) => {
-              throw new Error(data.message);
-            });
-          }
-          return response.json();
-        })
-        .then((data) => {
-          context.commit("setError", {
-            state: false,
-            message: "",
-            mode: mode,
-          });
-          context.commit("setLoading", false);
-          context.dispatch("handleData", data);
-        })
-        .catch((error) => {
-          context.commit("setError", {
-            state: true,
-            message: error.message,
-            mode: mode,
-          });
-          context.commit("setLoading", false);
-          console.error("error:", error.message);
-        });
+      fetchAuthData(url, data, context);
     },
     handleData(context, payload) {
       console.log(payload);
+
+      // TODO: set userInfo
     },
   },
 };

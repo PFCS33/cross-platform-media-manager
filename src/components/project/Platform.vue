@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="box" v-loading="loading">
     <div class="toolbox">
       <div
         @click="changeSelectedPlatform('overview')"
@@ -100,7 +100,7 @@
       </div>
     </div>
     <div class="login-btn">
-      <SvgIcon iconName="add" class="icon" @click="openDialog"></SvgIcon>
+      <SvgIcon iconName="add" class="icon" @click="openAuthDialog"></SvgIcon>
     </div>
     <el-dialog
       v-model="dialogFormVisible"
@@ -124,7 +124,7 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <BaseButton class="button confirm" @click="submitAccountBinding">
+          <BaseButton class="button confirm" @click="submitAuthRequest">
             Confirm
           </BaseButton>
           <BaseButton class="button cancle" @click="dialogFormVisible = false"
@@ -137,6 +137,8 @@
 </template>
 
 <script>
+import { ElMessage } from "element-plus";
+
 export default {
   data() {
     return {
@@ -146,7 +148,15 @@ export default {
       platformAdded: null,
     };
   },
+
   computed: {
+    loading() {
+      return this.$store.getters["platform/loading"];
+    },
+
+    error() {
+      return this.$store.getters["platform/error"];
+    },
     displayedAccounts() {
       const platform = this.selectedPlatform;
       const totalAccounts = this.$store.getters["platform/accountInfo"];
@@ -173,6 +183,16 @@ export default {
       return this.displayedAccounts.filter((info) => !info.isLogin);
     },
   },
+  watch: {
+    error(newVal) {
+      if (newVal.state) {
+        ElMessage.error(`Error: ${newVal.message}`);
+        setTimeout(() => ElMessage.error("Please try again"), 500);
+      } else {
+        ElMessage.success(`${newVal.message}`);
+      }
+    },
+  },
   methods: {
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
@@ -181,22 +201,45 @@ export default {
       this.selectedPlatform = platform;
     },
 
-    redirectToWeibo() {
-      const authURL =
-        "https://api.weibo.com/oauth2/authorize?client_id=1954849401&redirect_uri=https://api.weibo.com/oauth2/default.html&response_type=code";
-      window.location.href = authURL;
-    },
-    openDialog() {
+    openAuthDialog() {
       this.dialogFormVisible = true;
     },
-    submitAccountBinding() {
+    submitAuthRequest() {
       const platform = this.platformAdded;
 
       if (!platform) {
         ElMessage.warning("please select a platform");
       } else {
         this.dialogFormVisible = false;
-        // TODO: 账号绑定请求发送
+        // 重定向到对应社交媒体的授权页面
+        let authURL = null;
+        switch (platform) {
+          case "weibo":
+            authURL =
+              "https://api.weibo.com/oauth2/authorize?client_id=1954849401&redirect_uri=https://api.weibo.com/oauth2/default.html&response_type=code";
+            break;
+          case "x":
+            break;
+          case "facebook":
+            break;
+          case "instogram":
+            break;
+        }
+
+        const oauthWindow = window.open(authURL, "_blank");
+        window.addEventListener("message", (event) => {
+          if (event.origin !== "http://localhost:5173") return;
+          else {
+            if (event.data.status === "success") {
+              // 向 server 发送 code
+
+              this.$store.dispatch("platform/postAuthCode", {
+                code: event.data.code,
+                platform: platform,
+              });
+            }
+          }
+        });
       }
     },
   },
@@ -208,6 +251,7 @@ export default {
 
 <style lang="scss" scoped>
 .box {
+  position: relative;
   @include container-base();
   @include flex-box(row);
   padding: 2rem 3rem;
@@ -384,9 +428,9 @@ export default {
   }
 
   .login-btn {
-    position: fixed;
-    bottom: 6%;
-    right: 4%;
+    position: absolute;
+    bottom: 3%;
+    right: 2%;
     .icon {
       @include icon-style($icon-size-large, $third-color);
       transition: fill 0.2s ease-out;
@@ -404,6 +448,13 @@ export default {
 </style>
 
 <style lang="scss">
+.box {
+  .el-loading-mask {
+    border-radius: 2.5rem;
+    background-color: rgba(#fff, 0.7);
+  }
+}
+
 .el-dialog.platform {
   width: 30%;
   background-color: $secondary-color-dark;
