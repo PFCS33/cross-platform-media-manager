@@ -232,7 +232,6 @@ export default {
           else {
             if (event.data.status === "success") {
               // 向 server 发送 code
-
               this.$store.dispatch("platform/postAuthCode", {
                 code: event.data.code,
                 platform: platform,

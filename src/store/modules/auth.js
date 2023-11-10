@@ -6,7 +6,7 @@ export default {
     return {
       baseUrl: "http://127.0.0.1:5000",
       // 登录状态标记
-      isLogin: true,
+      isLogin: false,
       // communication state
       loading: false,
       error: {
@@ -79,6 +79,7 @@ export default {
       //   // });
       /* -------------------------------------------------------------------------- */
       // }, 500);
+
       fetchAuthData(url, data, context);
     },
     handleData(context, payload) {

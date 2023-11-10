@@ -1,6 +1,7 @@
 async function fetchAuthData(url, data, context) {
   try {
     context.commit("setLoading", true);
+
     let response = await fetch(url, {
       method: "POST",
       headers: {
@@ -36,6 +37,7 @@ async function fetchAuthData(url, data, context) {
 async function fetchAuthorizeData(url, data, context) {
   try {
     context.commit("setLoading", true);
+    console.log("fromdata:", data);
     let response = await fetch(url, {
       method: "POST",
       headers: {

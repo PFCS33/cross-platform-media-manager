@@ -88,10 +88,12 @@ export default {
   watch: {
     formIsValid(newVal) {
       if (!newVal) {
-        ElMessage.warning(
-          "Sorry, at least one of the input was detected as out of specification"
-        );
-        setTimeout(() => ElMessage.warning("Please try again"), 500);
+        ElNotification({
+          title: "Input Format Error",
+          message: `at least one of the input was detected as out of specification. Please try again`,
+          type: "warning",
+        });
+
         this.formIsValid = true;
       }
     },

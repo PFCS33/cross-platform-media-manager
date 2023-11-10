@@ -1,5 +1,22 @@
 <template>
   <BaseCard class="card">
+    <el-dialog v-model="policyShow" title="Privacy Policy">
+      <div class="content">Balabala...</div>
+      <template #footer>
+        <span class="dialog-footer">
+          <BaseButton @click="policyShow = false">Cancel</BaseButton>
+          <BaseButton
+            class="check"
+            @click="
+              policyShow = false;
+              policyChecked = true;
+            "
+          >
+            Confirm
+          </BaseButton>
+        </span>
+      </template>
+    </el-dialog>
     <img class="icon" src="/auth-button.png" alt="auth-botton" />
     <div class="title-box">
       <h1 class="title main-title">welcome</h1>
@@ -37,6 +54,16 @@
           <p class="error-msg" v-if="!password.isValid">Illegal Input</p>
         </transition>
       </div>
+      <div class="policy-box">
+        <el-checkbox v-model="policyChecked">
+          <template v-slot="lable">
+            <span>I have read and accept the </span>
+            <span class="policy-link" @click="togglePolicy"
+              >Privacy Policy</span
+            >
+          </template>
+        </el-checkbox>
+      </div>
       <div class="link-box">
         <router-link to="">Forgot Password</router-link>
       </div>
@@ -44,6 +71,7 @@
         <BaseButton @click="submitForm">Login</BaseButton>
       </div>
     </form>
+
     <div class="signup-box">
       <span>Dont't have an account?</span>
       <router-link :to="{ name: 'signup' }"> Signup </router-link>
@@ -63,22 +91,48 @@ export default {
         val: "",
         isValid: true,
       },
-      formIsValid: true,
+      policyChecked: false,
+      policyShow: false,
+      formIsValid: {
+        state: true,
+        mode: null,
+      },
     };
   },
   computed: {},
   watch: {
     formIsValid(newVal) {
-      if (!newVal) {
-        ElMessage.warning(
-          "Sorry, at least one of the input was detected as out of specification"
-        );
-        setTimeout(() => ElMessage.warning("Please try again"), 500);
-        this.formIsValid = true;
+      if (!newVal.state) {
+        switch (newVal.mode) {
+          case "format":
+            ElNotification({
+              title: "Input Format Error",
+              message: `at least one of the input was detected as out of specification. Please try again`,
+              type: "warning",
+            });
+            break;
+          case "policy":
+            ElNotification({
+              title: "Privacy Policy Unchecked",
+              message: `Please read and confirm our privacy policy before you use our application`,
+              type: "warning",
+            });
+            break;
+        }
+
+        this.formIsValid = {
+          state: true,
+          mode: null,
+        };
       }
     },
   },
   methods: {
+    togglePolicy(event) {
+      // 防止事件冒泡，stopPropagation 不行
+      event.preventDefault();
+      this.policyShow = !this.policyShow;
+    },
     submitForm() {
       if (this.validateForm()) {
         const fromData = {
@@ -93,12 +147,22 @@ export default {
       }
     },
     validateForm() {
+      const formValidation = {
+        mode: null,
+        state: false,
+      };
       if (this.validateEmail() && this.validatePassword()) {
-        return true;
+        if (this.policyChecked) {
+          return true;
+        } else {
+          formValidation.mode = "policy";
+        }
       } else {
         this.formIsValid = false;
-        return false;
+        formValidation.mode = "format";
       }
+      this.formIsValid = formValidation;
+      return false;
     },
     validateEmail() {
       if (!this.$refs.email.checkValidity()) {
@@ -164,9 +228,29 @@ export default {
     flex: 1 1 75%;
     @include flex-box(column);
 
+    .policy-box {
+      flex: 0 1 3%;
+      padding: 0 5.2rem;
+      span {
+        color: $text-secondary-color;
+        font-size: 1.2rem;
+
+        &.policy-link {
+          padding-left: 0.2rem;
+          display: inline-block;
+          color: $secondary-color;
+          transition: transform 0.2s ease-out;
+
+          &:hover {
+            color: $secondary-color-dark;
+            transform: scale(1.05);
+          }
+        }
+      }
+    }
     .input-box {
       flex: 1 1 33%;
-      padding: 1.5rem 5rem;
+      padding: 1.3rem 5rem;
       input {
         width: 100%;
         height: 100%;
@@ -224,8 +308,9 @@ export default {
       }
     }
   }
+
   .signup-box {
-    flex: 0 1 10%;
+    flex: 0 1 9%;
     @include flex-box(row);
     gap: 1rem;
     justify-content: center;
@@ -244,6 +329,37 @@ export default {
       color: $secondary-color-dark;
       transform: scale(1.05);
     }
+  }
+}
+</style>
+
+<style lang="scss">
+.card {
+  .el-dialog {
+    --el-color-primary: #{$secondary-color};
+    .el-dialog__footer {
+      @include flex-box(row);
+      justify-content: end;
+      .dialog-footer {
+        @include flex-box(row);
+        gap: 1rem;
+
+        button {
+          border-radius: 1.5rem;
+          &.check {
+            background-color: $third-color;
+            &:hover {
+              background-color: $third-color-dark;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.policy-box {
+  .el-checkbox {
+    --el-color-primary: #{$secondary-color};
   }
 }
 </style>
