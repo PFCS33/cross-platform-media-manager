@@ -1,7 +1,8 @@
-async function fetchAuthData(url, data, context) {
+async function fetchAuthData(url, payload, context) {
+  const data = payload.data;
+  const mode = payload.mode;
   try {
     context.commit("setLoading", true);
-
     let response = await fetch(url, {
       method: "POST",
       headers: {
@@ -22,7 +23,10 @@ async function fetchAuthData(url, data, context) {
       mode: mode,
     });
     context.commit("setLoading", false);
-    context.dispatch("handleData", responseData);
+    context.dispatch("handleData", {
+      data: responseData,
+      mode: mode,
+    });
   } catch (error) {
     context.commit("setError", {
       state: true,
@@ -34,16 +38,15 @@ async function fetchAuthData(url, data, context) {
   }
 }
 
-async function fetchAuthorizeData(url, data, context) {
+async function fetchAccountsData(url, JWTToken, context) {
   try {
     context.commit("setLoading", true);
-    console.log("fromdata:", data);
+
     let response = await fetch(url, {
-      method: "POST",
+      method: "GET",
       headers: {
-        "Content-Type": "application/json",
+        Authorization: "Bearer " + JWTToken,
       },
-      body: JSON.stringify(data),
     });
     let responseData = await response.json();
     if (!response.ok) {
@@ -54,9 +57,7 @@ async function fetchAuthorizeData(url, data, context) {
         message: responseData.message ? responseData.message : "load succeeded",
       });
       context.commit("setLoading", false);
-      console.log(responseData);
-      // TODO handle response data
-      //   context.dispatch("handleData", responseData);
+      context.dispatch("handleData", responseData.data);
     }
   } catch (error) {
     context.commit("setError", {
@@ -68,4 +69,4 @@ async function fetchAuthorizeData(url, data, context) {
   }
 }
 
-export { fetchAuthData, fetchAuthorizeData };
+export { fetchAuthData, fetchAccountsData };

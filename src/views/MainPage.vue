@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Sidebar class="sidebar"></Sidebar>
+    <Sidebar class="sidebar" :userName="userInfo.name"></Sidebar>
     <div class="content-box">
       <router-view v-slot="slotProps">
         <transition name="route" mode="out-in">
@@ -23,6 +23,9 @@ export default {
   computed: {
     isLogin() {
       return this.$store.getters["auth/isLogin"];
+    },
+    userInfo() {
+      return this.$store.getters["auth/userInfo"];
     },
   },
 };

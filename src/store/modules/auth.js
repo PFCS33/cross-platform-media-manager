@@ -1,12 +1,14 @@
 import { fetchAuthData } from "@/services/fetchData";
+import { decodeJwtPayload } from "@/services/JWTToken";
 
 export default {
   namespaced: true,
   state() {
     return {
-      baseUrl: "http://127.0.0.1:5000",
+      // baseUrl: "http://127.0.0.1:5000",
+      baseUrl: "http://127.0.0.1:4523/m1/3581187-0-default",
       // 登录状态标记
-      isLogin: false,
+      isLogin: true,
       // communication state
       loading: false,
       error: {
@@ -15,13 +17,20 @@ export default {
         mode: "",
       },
 
+      // JWTToken: null,
+      JWTToken:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6IkFsZXgiLCJpYXQiOjE3MjAwMzEyMjB9.speYd0eX-HHBLUIjts0fom8eTF9UJYNQDp1MzpHZHp4",
+      // userInfo: null,
       userInfo: {
-        username: "Alex",
-        user_id: 1,
+        name: "Alex",
+        id: "1",
       },
     };
   },
   getters: {
+    JWTToken(state) {
+      return state.JWTToken;
+    },
     userInfo(state) {
       return state.userInfo;
     },
@@ -39,6 +48,9 @@ export default {
     },
   },
   mutations: {
+    setJWTToken(state, payload) {
+      state.JWTToken = payload;
+    },
     setUserInfo(state, payload) {
       state.userInfo = payload;
     },
@@ -55,12 +67,12 @@ export default {
   actions: {
     uploadData(context, payload) {
       const data = {
-        username: payload.data.email,
+        account: payload.data.email,
         password: payload.data.password,
       };
       const mode = payload.mode;
 
-      const url = context.getters.baseUrl + "/" + mode;
+      const url = context.getters.baseUrl + "/auth/" + mode;
 
       /* fake-------------------------------------------------------------------------- */
       // context.commit("setLoading", true);
@@ -80,12 +92,21 @@ export default {
       /* -------------------------------------------------------------------------- */
       // }, 500);
 
-      fetchAuthData(url, data, context);
+      fetchAuthData(url, { data: data, mode: mode }, context);
     },
     handleData(context, payload) {
-      console.log(payload);
-
-      // TODO: set userInfo
+      const mode = payload.mode;
+      if (mode === "login") {
+        // 存储并解析JWT Token
+        const token = payload.data.token;
+        context.commit("setJWTToken", token);
+        const JWTTokenPayload = decodeJwtPayload(token);
+        const userInfo = {
+          id: JWTTokenPayload.sub,
+          name: JWTTokenPayload.name,
+        };
+        context.commit("setUserInfo", userInfo);
+      }
     },
   },
 };

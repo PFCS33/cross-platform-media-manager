@@ -1,4 +1,4 @@
-import { fetchAuthorizeData } from "@/services/fetchData";
+import { fetchAccountsData } from "@/services/fetchData";
 
 export default {
   namespaced: true,
@@ -56,7 +56,7 @@ export default {
           break;
         case "facebook":
           break;
-        case "instogram":
+        case "wordpress":
           break;
       }
 
@@ -70,61 +70,22 @@ export default {
       fetchAuthorizeData(url, data, context);
     },
     getAccountInfo(context, payload) {
-      let dataFromBackend = null;
-      context.commit("setLoading", true);
-      // fake interface
-      setTimeout(() => {
-        dataFromBackend = [
-          {
-            username: "aaa",
-            platform: "weibo",
-            isLogin: false,
-          },
-          {
-            username: "bbb",
-            platform: "weibo",
-            isLogin: true,
-          },
-          {
-            username: "ccc",
-            platform: "weibo",
-            isLogin: true,
-          },
-
-          {
-            username: "aaaa",
-            platform: "x",
-            isLogin: true,
-          },
-          {
-            username: "bbbb",
-            platform: "facebook",
-            isLogin: true,
-          },
-          {
-            username: "cccc",
-            platform: "instogram",
-            isLogin: true,
-          },
-        ];
-        const platformMap = new Map();
-        dataFromBackend.forEach((info) => {
-          const platform = info.platform;
-          if (platformMap.has(platform)) {
-            platformMap.get(platform).push(info);
-          } else {
-            platformMap.set(platform, [info]);
-          }
-        });
-
-        context.commit("setAccountInfo", platformMap);
-
-        context.commit("setLoading", false);
-        context.commit("setError", {
-          state: false,
-          message: "load succeeded",
-        });
-      }, 1000);
+      const JWTToken = context.rootGetters["auth/JWTToken"];
+      const url = context.rootGetters["auth/baseUrl"] + "/accounts";
+      fetchAccountsData(url, JWTToken, context);
+    },
+    handleData(context, payload) {
+      const data = payload;
+      const platformMap = new Map();
+      data.forEach((info) => {
+        const platform = info.platform;
+        if (platformMap.has(platform)) {
+          platformMap.get(platform).push(info);
+        } else {
+          platformMap.set(platform, [info]);
+        }
+      });
+      context.commit("setAccountInfo", platformMap);
     },
   },
 };

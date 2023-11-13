@@ -109,10 +109,14 @@
 </template>
 <script>
 export default {
+  props: {
+    userName: {
+      type: String,
+    },
+  },
   data() {
     return {
       sidebarExpandedFlag: false,
-      userName: "Alex",
     };
   },
   methods: {
@@ -149,7 +153,7 @@ export default {
       }
       .username {
         font-size: 2.5rem;
-        color: $primary-color;
+        color: $third-color-light;
         opacity: 0;
         transition: opacity 0.2s ease-out;
       }

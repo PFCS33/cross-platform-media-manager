@@ -48,15 +48,15 @@
         <span class="text">Facebook</span>
       </div>
       <div
-        @click="changeSelectedPlatform('instogram')"
+        @click="changeSelectedPlatform('wordpress')"
         :class="[
           'inner-box',
           'ins-box',
-          { selected: selectedPlatform === 'instogram' },
+          { selected: selectedPlatform === 'wordpress' },
         ]"
       >
-        <svgIcon iconName="instogram" class="icon"></svgIcon>
-        <span class="text">Instogram</span>
+        <svgIcon iconName="wordpress" class="icon"></svgIcon>
+        <span class="text">WordPress</span>
       </div>
     </div>
     <div class="content">
@@ -144,7 +144,7 @@ export default {
     return {
       selectedPlatform: "overview",
       dialogFormVisible: false,
-      platforms: ["weibo", "x", "facebook", "instogram"],
+      platforms: ["weibo", "x", "facebook", "wordpress"],
       platformAdded: null,
     };
   },
@@ -222,7 +222,7 @@ export default {
             break;
           case "facebook":
             break;
-          case "instogram":
+          case "wordpress":
             break;
         }
 
