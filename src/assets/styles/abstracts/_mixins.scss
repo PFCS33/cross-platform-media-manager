@@ -92,3 +92,28 @@
     transition: all 0.1s ease-in;
   }
 }
+
+@mixin fade-icon() {
+  .fade-icon-enter-from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  .fade-icon-leave-to {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  .fade-icon-enter-to,
+  .fade-icon-leave-from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .fade-icon-enter-active {
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out !important;
+  }
+
+  .fade-icon-leave-active {
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out !important;
+  }
+}

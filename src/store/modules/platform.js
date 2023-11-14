@@ -1,4 +1,4 @@
-import { fetchAccountsData } from "@/services/fetchData";
+import { getData } from "@/services/fetchData";
 
 export default {
   namespaced: true,
@@ -43,6 +43,7 @@ export default {
     },
   },
   actions: {
+    // TODO 账号绑定流程
     postAuthCode(context, payload) {
       const code = payload.code;
       const platform = payload.platform;
@@ -67,12 +68,12 @@ export default {
         validation1: code,
       };
 
-      fetchAuthorizeData(url, data, context);
+      // fetchAuthorizeData(url, data, context);
     },
     getAccountInfo(context, payload) {
       const JWTToken = context.rootGetters["auth/JWTToken"];
       const url = context.rootGetters["auth/baseUrl"] + "/accounts";
-      fetchAccountsData(url, JWTToken, context);
+      getData(url, JWTToken, context);
     },
     handleData(context, payload) {
       const data = payload;

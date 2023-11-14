@@ -72,7 +72,9 @@
               <svgIcon :iconName="info.platform" class="icon"></svgIcon>
               <span class="username">@ {{ info.username }}</span>
               <div class="flex-div"></div>
-              <BaseButton class="button backward">Logout</BaseButton>
+              <BaseButton class="button backward" @click="logoutAccount(info)"
+                >Logout</BaseButton
+              >
             </div>
           </div>
         </transition-group>
@@ -92,7 +94,11 @@
               <div class="flex-div"></div>
               <div class="button-box">
                 <BaseButton class="button forward">Login</BaseButton>
-                <BaseButton class="button backward">Delete</BaseButton>
+                <BaseButton
+                  class="button backward"
+                  @click="confirmAccountDelete"
+                  >Delete</BaseButton
+                >
               </div>
             </div>
           </div>
@@ -133,6 +139,23 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog
+      v-model="deleteDialogVisible"
+      title="Are you sure to delete this account?"
+      :show-close="false"
+      class="platform"
+    >
+      <template #footer>
+        <span class="dialog-footer">
+          <BaseButton class="button confirm" @click="deleteAccount">
+            Confirm
+          </BaseButton>
+          <BaseButton class="button cancle" @click="deleteDialogVisible = false"
+            >Cancel</BaseButton
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -146,6 +169,7 @@ export default {
       dialogFormVisible: false,
       platforms: ["weibo", "x", "facebook", "wordpress"],
       platformAdded: null,
+      deleteDialogVisible: false,
     };
   },
 
@@ -194,6 +218,15 @@ export default {
     },
   },
   methods: {
+    deleteAccount() {
+      ElMessage.success("delete account successfully");
+    },
+    confirmAccountDelete() {
+      this.deleteDialogVisible = true;
+    },
+    logoutAccount(info) {
+      info.isLogin = false;
+    },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },

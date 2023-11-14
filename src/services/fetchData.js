@@ -38,7 +38,7 @@ async function fetchAuthData(url, payload, context) {
   }
 }
 
-async function fetchAccountsData(url, JWTToken, context) {
+async function getData(url, JWTToken, context) {
   try {
     context.commit("setLoading", true);
 
@@ -69,4 +69,4 @@ async function fetchAccountsData(url, JWTToken, context) {
   }
 }
 
-export { fetchAuthData, fetchAccountsData };
+export { fetchAuthData, getData };
