@@ -1,11 +1,34 @@
 <template>
   <div class="box" v-loading="loading">
-    <el-dialog v-model="showEditPanel" title="Edit your article">
-      <div class="content">Balabala...</div>
+    <el-dialog
+      class="publish-panel-card"
+      destroy-on-close
+      v-model="showEditPanel"
+    >
+      <template #header>
+        <div class="title-box">
+          <h1 class="title">Edit your article</h1>
+          <div class="time-box">
+            <span class="fixed-time"> {{ selecedDay }}</span>
+            <div class="accurate-time">
+              <el-time-select
+                v-model="selecedAccurateTime"
+                start="00:00"
+                step="00:01"
+                end="24:00"
+                placeholder="Select time"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+      <PublishPanel></PublishPanel>
       <template #footer>
         <span class="dialog-footer">
-          <BaseButton @click="showEditPanel = false">Cancel</BaseButton>
-          <BaseButton class="check" @click="showEditPanel = false">
+          <BaseButton class="button cancle" @click="showEditPanel = false"
+            >Cancel</BaseButton
+          >
+          <BaseButton class="button confirm" @click="showEditPanel = false">
             Confirm
           </BaseButton>
         </span>
@@ -88,12 +111,19 @@
 </template>
 
 <script>
+import PublishPanel from "./PublishPanel.vue";
 export default {
+  components: {
+    PublishPanel,
+  },
+
   data() {
     return {
       calendar_data: null,
       showCalendar: false,
       showEditPanel: false,
+      selecedDay: null,
+      selecedAccurateTime: null,
     };
   },
   watch: {
@@ -135,7 +165,7 @@ export default {
   },
   methods: {
     openEditView(day) {
-      console.log(day);
+      this.selecedDay = day;
       this.showEditPanel = true;
     },
     toggleMoreInfo(info) {
@@ -186,7 +216,7 @@ export default {
       @include flex-box(row);
 
       max-height: 100%;
-      overflow: hidden;
+      overflow: visible;
 
       justify-content: space-between;
 
@@ -201,7 +231,12 @@ export default {
         // border: 0.2rem solid $secondary-color;
         border: none;
 
-        transition: background-color 0.2s ease-out, border 0.2s ease-out;
+        transition: background-color 0.2s ease-out, border 0.2s ease-out,
+          box-shadow 0.2s ease-out;
+
+        &:hover {
+          box-shadow: 0.4rem 0.5rem 0.4rem rgba(0, 0, 0, 0.26);
+        }
 
         @include flex-box(column);
         gap: 0.3rem;
@@ -250,7 +285,7 @@ export default {
 ::-webkit-scrollbar {
   width: 0.6rem;
   height: 0.6rem;
-  background-color: #f5f5f5;
+  background-color: transparent;
 }
 
 /* 设置scroll bar thumb的样式 */
@@ -263,6 +298,104 @@ export default {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #a8a8a8;
 }
+.el-dialog.publish-panel-card {
+  margin-top: 1%;
+  width: 90%;
+  height: 90%;
+
+  padding: 0rem 1rem;
+  border-radius: 1rem;
+  @include flex-box(column);
+  justify-content: space-between;
+  background-color: $background-color;
+  --el-color-primary: #{$secondary-color};
+
+  .el-dialog__header {
+    // flex: 0 1 10%;
+    .title-box {
+      @include flex-box(row);
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 2rem;
+      .title {
+        color: $secondary-color;
+      }
+    }
+
+    .time-box {
+      @include flex-box(row);
+      gap: 1rem;
+      .fixed-time {
+        user-select: none;
+        @include flex-box(row);
+        align-items: center;
+        font-weight: $font-weight-bold;
+        color: $primary-color;
+        background-color: $secondary-color-dark;
+        // border: 0.1rem solid #dcdfe6;
+        border: none;
+        padding: 0.7rem;
+
+        border-radius: 0.4rem;
+      }
+
+      .accurate-time {
+        width: 15rem;
+        .el-select {
+          // border: none;
+          --el-color-primary: #{$secondary-color};
+
+          // background-color: $secondary-color;
+          // --el-select-border-color-hover: #{$primary-color-dark};
+          .el-input__wrapper {
+            // background-color: $secondary-color;
+            // --el-input-placeholder-color: #{rgba($primary-color, 0.4)};
+            // --el-input-border-color: #{$secondary-color};
+            --el-input-border-radius: 0.4rem;
+
+            .el-input__inner {
+              color: $secondary-color;
+            }
+            .el-input__prefix {
+              svg {
+                color: $secondary-color;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .el-dialog__body {
+    flex: 1 0 auto;
+    padding: 0;
+    max-height: 80%;
+  }
+
+  .el-dialog__footer {
+    // flex: 0 1 auto;
+    padding: 0.8rem 1rem;
+    .dialog-footer {
+      @include flex-box(row);
+      justify-content: end;
+      gap: 1rem;
+
+      .button {
+        border-radius: 2rem;
+
+        &.cancle {
+          background-color: $third-color;
+          &:hover {
+            background-color: $third-color-dark;
+          }
+        }
+        &.confirm {
+        }
+      }
+    }
+  }
+}
+
 .el-popper__arrow::before {
   background: $secondary-color;
   right: 0;
@@ -279,11 +412,8 @@ export default {
       border-radius: 0.5rem;
       padding: 0.4rem 0.7rem;
 
-      // background-color: $secondary-color;
-      // border: 0.2rem solid $secondary-color;
-
       background-color: $background-color-white;
-      // border: 0.2rem solid $primary-color;
+
       border: none;
 
       transition: background-color 0.2s ease-out, border 0.2s ease-out,
@@ -316,12 +446,10 @@ export default {
         }
       }
       &:hover {
-        // box-shadow: inset 0.3rem 0.3rem 0.5rem rgba($primary-color, 0.5),
-        //   inset -0.3rem -0.3rem 0.5rem rgba($primary-color, 0.5);
-        box-shadow: 0.5rem 0.5rem 0.2rem rgba(0, 0, 0, 0.26);
+        box-shadow: 0.3rem 0.5rem 0.4rem rgba(0, 0, 0, 0.56);
         cursor: pointer;
         background-color: $secondary-color-dark;
-        // border: 0.2rem solid $secondary-color-dark;
+
         .title-box {
           .title {
             color: $primary-color;
@@ -370,7 +498,7 @@ export default {
   }
   .el-calendar__body {
     .el-calendar-table {
-      // border-spacing: 0.2rem;
+      border-spacing: 0.1rem;
       .el-calendar-day {
         padding: 0;
         padding-top: 0.1rem;
@@ -431,10 +559,10 @@ export default {
         }
 
         &.is-selected {
-          box-shadow: inset 0.3rem 0.5rem 0.5rem rgba(0, 0, 0, 0.26);
+          // box-shadow: inset 0.3rem 0.5rem 0.5rem rgba(0, 0, 0, 0.26);
         }
         &:hover {
-          box-shadow: 0.3rem 0.5rem 0.5rem rgba(0, 0, 0, 0.26);
+          // box-shadow: 0.3rem 0.5rem 0.5rem rgba(0, 0, 0, 0.26);
         }
 
         &.is-today {

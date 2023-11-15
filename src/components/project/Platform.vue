@@ -302,42 +302,19 @@ export default {
     padding-top: 1rem;
 
     .inner-box {
-      @include flex-box(row);
-      align-items: center;
-      gap: 0.8rem;
-
-      background-color: $secondary-color;
-      padding: 0.5rem;
-      border-radius: 1.2rem;
-      box-shadow: 0.15rem 0.3rem 0.2rem 0rem rgba(0, 0, 0, 0.26);
-      transition: background-color 0.2s ease-out, box-shadow 0.2s ease-out;
-      .icon {
-        @include icon-style($icon-size-large);
-        transition: fill 0.2s ease-out;
-      }
-
+      @include platform-card();
       .text {
         font-size: 1.4rem;
         transition: color 0.2s ease-out;
         color: $icon-color-gray;
       }
       &:hover {
-        cursor: pointer;
-        background-color: $secondary-color-dark;
-        .icon {
-          fill: $primary-color;
-        }
         .text {
           color: $primary-color;
         }
       }
 
       &.selected {
-        background-color: $secondary-color-dark;
-        box-shadow: inset 0.3rem 0.3rem 0.5rem 0.4rem rgba(0, 0, 0, 0.423);
-        .icon {
-          fill: $primary-color;
-        }
         .text {
           color: $primary-color;
         }
