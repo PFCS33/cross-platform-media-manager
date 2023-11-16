@@ -58,7 +58,18 @@
         <BaseButton class="btn" @click="markdownRender">Preview</BaseButton>
       </div>
     </div>
-    <div class="img-box"></div>
+    <div class="img-box">
+      <el-upload
+        class="upload-card"
+        v-model:file-list="imageUrlList"
+        :http-request="imgurUpload"
+        list-type="picture-card"
+        :on-preview="handleImagePreview"
+        :on-remove="handleImageRemove"
+      >
+        <SvgIcon iconName="add-pic" class="icon"></SvgIcon>
+      </el-upload>
+    </div>
     <div class="preview-box">
       <div class="platform-box">
         <div
@@ -99,6 +110,7 @@
 
 <script>
 import MarkdownIt from "markdown-it";
+import SvgIcon from "../ui/SvgIcon.vue";
 
 export default {
   data() {
@@ -108,7 +120,7 @@ export default {
       content: null,
       newTag: null,
       tags: ["Tag1", "Tag2", "Tag3"],
-
+      imageUrlList: [],
       // preview
       renderedHtml: null,
       md: new MarkdownIt("commonmark", {
@@ -121,7 +133,15 @@ export default {
       selectedPlatform: "markdown",
     };
   },
+  watch: {
+    imageUrlList(newVal) {
+      console.log(newVal);
+    },
+  },
   methods: {
+    imgurUpload() {},
+    handleImagePreview() {},
+    handleImageRemove() {},
     markdownRender() {
       const result = this.md.render(this.content);
       this.renderedHtml = result;
@@ -146,6 +166,7 @@ export default {
       });
     },
   },
+  components: { SvgIcon },
 };
 </script>
 
@@ -231,14 +252,22 @@ export default {
     }
   }
   .img-box {
-    border: 0.2rem solid rgba($secondary-color, 0.6);
+    // border: 0.2rem solid rgba($secondary-color, 0.6);
 
-    flex: 1 1 10%;
+    flex: auto;
+    max-width: 10%;
+
+    .upload-card {
+      .icon {
+        @include icon-style($icon-size-large, rgba($secondary-color, 0.4));
+      }
+    }
   }
   .preview-box {
     // border: 0.2rem solid rgba($secondary-color, 0.6);
 
     flex: 0 1 45%;
+    max-width: 45%;
 
     @include flex-box(column);
     gap: 1rem;
@@ -260,13 +289,15 @@ export default {
     }
     .preview {
       // border: 0.2rem solid rgba($secondary-color, 0.6);
-      padding-left: 1rem;
+      padding-left: 1.3rem;
+      padding-top: 0.6rem;
       flex: auto;
       overflow: auto;
+
       background-color: $background-color-white;
       border-radius: 0.8rem;
-      box-shadow: inset 0.3rem 0.3rem 0.5rem #4444442a,
-        inset -0.3rem -0.3rem 0.5rem #4444442a;
+      box-shadow: inset 0.2rem 0.2rem 0.5rem rgba($secondary-color, 0.3),
+        inset -0.2rem -0.2rem 0.5rem rgba($background-color-gray, 1);
     }
   }
   .divider {
@@ -286,6 +317,33 @@ export default {
     padding-left: 2rem; /* 通过设置左侧内边距来添加缩进 */
   }
 }
+
+.upload-card {
+  width: 100%;
+  max-height: 100%;
+
+  overflow: auto;
+  @include flex-box(row);
+  justify-content: center;
+  align-items: start;
+  .el-upload-list.el-upload-list--picture-card {
+    --el-upload-list-picture-card-size: 10rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    // justify-content: center;
+    overflow: auto;
+    .el-upload-list__item {
+      // @include flex-center();
+      margin: 0;
+    }
+
+    .el-upload.el-upload--picture-card {
+      --el-upload-picture-card-size: 10rem;
+    }
+  }
+}
+
 .el-dialog.publish-panel-card {
   .el-dialog__body {
     .edit-box {
