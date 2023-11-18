@@ -59,16 +59,46 @@
       </div>
     </div>
     <div class="img-box">
-      <el-upload
-        class="upload-card"
-        v-model:file-list="imageUrlList"
-        :http-request="imgurUpload"
-        list-type="picture-card"
-        :on-preview="handleImagePreview"
-        :on-remove="handleImageRemove"
-      >
-        <SvgIcon iconName="add-pic" class="icon"></SvgIcon>
-      </el-upload>
+      <div class="upload-card">
+        <label for="imgInput" class="upload-btn">
+          <SvgIcon iconName="add-pic" class="icon"></SvgIcon>
+        </label>
+        <input
+          id="imgInput"
+          @click="imageUpload"
+          type="file"
+          accept="image/*"
+          class="file-input"
+        />
+        <transition-group name="list" tag="div" class="image-preview-box">
+          <div
+            class="image-preview-wrapper"
+            v-for="image in imageList"
+            :key="image.id"
+          >
+            <div class="image-preview">
+              <el-image
+                class="image"
+                :alt="image.id"
+                :src="image.url"
+                fit="contain"
+              />
+              <div class="hover-overlay">
+                <SvgIcon
+                  iconName="copy"
+                  class="icon"
+                  @click="copyURL2Clipboard(image)"
+                ></SvgIcon>
+                <SvgIcon
+                  iconName="delete "
+                  class="icon"
+                  @click="deleteImage(image.id)"
+                ></SvgIcon>
+              </div>
+            </div>
+          </div>
+        </transition-group>
+      </div>
     </div>
     <div class="preview-box">
       <div class="platform-box">
@@ -111,6 +141,8 @@
 <script>
 import MarkdownIt from "markdown-it";
 import SvgIcon from "../ui/SvgIcon.vue";
+import { imgurUpload } from "@/services/imgur.js";
+import { ElMessage } from "element-plus";
 
 export default {
   data() {
@@ -120,7 +152,29 @@ export default {
       content: null,
       newTag: null,
       tags: ["Tag1", "Tag2", "Tag3"],
-      imageUrlList: [],
+      // imageList: [],
+      imageList: [
+        {
+          id: "1",
+          url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+        },
+        {
+          id: "2",
+          url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+        },
+        {
+          id: "3",
+          url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+        },
+        {
+          id: "4",
+          url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+        },
+        {
+          id: "5",
+          url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+        },
+      ],
       // preview
       renderedHtml: null,
       md: new MarkdownIt("commonmark", {
@@ -134,14 +188,68 @@ export default {
     };
   },
   watch: {
-    imageUrlList(newVal) {
+    imageList(newVal) {
       console.log(newVal);
     },
   },
   methods: {
-    imgurUpload() {},
-    handleImagePreview() {},
-    handleImageRemove() {},
+    copyURL2Clipboard(image) {
+      console.log(navigator.clipboard);
+      navigator.clipboard
+        .writeText(image.url)
+        .then(() => {
+          // 显示复制成功的消息
+          alert("URL copied to clipboard");
+        })
+        .catch((err) => {
+          // 处理复制失败的情况
+          alert("Failed to copy URL: ", err);
+        });
+    },
+    deleteImage(imageId) {
+      this.imageList = this.imageList.filter((image) => image.id !== imageId);
+    },
+    imageUpload(event) {
+      const uploadedImage = event.target.files[0];
+
+      if (uploadedImage) {
+        if (uploadedImage.size > 1024 * 1024 * 2) {
+          ElNotification({
+            title: "Error",
+            message: "Image size should be less than 2MB",
+            type: "error",
+          });
+          return;
+        }
+
+        if (!uploadedImage.type.match("image.*")) {
+          ElNotification({
+            title: "Error",
+            message: "Only image type is allowed",
+            type: "error",
+          });
+          return;
+        }
+        const formData = new FormData();
+        formData.append("image", uploadedImage);
+        // formData.append("type", "file");
+        // formData.append('name', uploadedImage.name);
+        // formData.append('title', uploadedImage.name);
+        // formData.append('description', uploadedImage.name);
+        imgurUpload(formData)
+          .then((imageInfo) => {
+            ElMessage.success("image upload success");
+
+            this.$nextTick(() => {
+              this.imageList.push(imageInfo);
+            });
+          })
+          .catch((error) => {
+            ElMessage.error(error.message);
+          });
+      }
+    },
+
     markdownRender() {
       const result = this.md.render(this.content);
       this.renderedHtml = result;
@@ -172,6 +280,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "github-markdown-css/github-markdown.css";
+@include list-column-animation();
 .panel-box {
   @include flex-box(row);
   // height: 100%;
@@ -258,8 +367,97 @@ export default {
     max-width: 10%;
 
     .upload-card {
-      .icon {
-        @include icon-style($icon-size-large, rgba($secondary-color, 0.4));
+      width: 100%;
+      height: 100%;
+      @include flex-box(column);
+      align-items: center;
+      gap: 0.5rem;
+
+      .upload-btn {
+        @include flex-center(row);
+        width: 8rem;
+        height: 8rem;
+        min-height: 8rem;
+        cursor: pointer;
+
+        border: 0.2rem dashed rgba($secondary-color, 0.6);
+        @include flex-center(row);
+        transition: border-radius 0.3s ease-out, border-color 0.3s ease-out;
+        border-radius: 0.5rem;
+        .icon {
+          @include icon-style($icon-size-large, rgba($secondary-color, 0.4));
+          transition: fill 0.3s ease-out;
+        }
+
+        &:hover,
+        &:active {
+          border-radius: 0.8rem;
+          border-color: rgba($secondary-color, 0.3);
+          .icon {
+            fill: rgba($secondary-color, 0.25);
+          }
+        }
+      }
+      .file-input {
+        display: none;
+      }
+
+      .image-preview-box {
+        flex: 1 1 auto;
+        overflow: auto;
+
+        width: 100%;
+        max-width: 100%;
+
+        @include flex-box(column);
+        align-items: center;
+        gap: 0.5rem;
+
+        .image-preview-wrapper {
+          .image-preview {
+            position: relative;
+            .image {
+              width: 8rem;
+              height: 8rem;
+              background-color: $background-color-white;
+              // background-color: $secondary-color;
+              border-radius: 0.5rem;
+            }
+            .hover-overlay {
+              width: 100%;
+              height: 100%;
+              opacity: 0;
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba(0, 0, 0, 0.4);
+              border-radius: 0.5rem;
+              cursor: pointer;
+              transition: opacity 0.3s ease-out;
+
+              @include flex-center(row);
+              gap: 0.6rem;
+
+              .icon {
+                @include icon-style(
+                  $icon-size-regular,
+                  rgba($primary-color, 1)
+                );
+                transition: transform 0.2s ease-out, fill 0.2s ease-out;
+                &:hover {
+                  transform: scale(1.1);
+                  fill: lighten($primary-color, 10%);
+                }
+              }
+
+              &:hover {
+                opacity: 1;
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -315,32 +513,6 @@ export default {
   ul,
   ol {
     padding-left: 2rem; /* 通过设置左侧内边距来添加缩进 */
-  }
-}
-
-.upload-card {
-  width: 100%;
-  max-height: 100%;
-
-  overflow: auto;
-  @include flex-box(row);
-  justify-content: center;
-  align-items: start;
-  .el-upload-list.el-upload-list--picture-card {
-    --el-upload-list-picture-card-size: 10rem;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-    // justify-content: center;
-    overflow: auto;
-    .el-upload-list__item {
-      // @include flex-center();
-      margin: 0;
-    }
-
-    .el-upload.el-upload--picture-card {
-      --el-upload-picture-card-size: 10rem;
-    }
   }
 }
 
