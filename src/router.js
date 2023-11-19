@@ -8,8 +8,8 @@ import NotFoundPage from "@/views/NotFoundPage.vue";
 
 import LoginCard from "@/components/auth/Login.vue";
 import SignupCard from "@/components/auth/Signup.vue";
-import PlatformPage from "@/components/project/Platform.vue";
-import PostPublishPage from "@/components/project/PostPublish.vue";
+import PlatformPage from "@/components/project/platform/Platform.vue";
+import PostPublishPage from "@/components/project/publish/PostPublish.vue";
 import HistoryPage from "@/components/project/History.vue";
 import StatisticPage from "./components/project/Statistic.vue";
 import DraftPage from "@/components/project/DraftBot.vue";

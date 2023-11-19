@@ -4,7 +4,7 @@
       <div class="other-box">
         <div class="title">
           <div class="form-item">
-            <span class="label">Title</span>
+            <span class="label">TITLE</span>
             <el-input
               v-model="title"
               placeholder="Please input title"
@@ -50,25 +50,29 @@
           class="content"
           v-model="content"
           type="textarea"
-          placeholder="Please input"
+          placeholder="Please input the content of your post"
         />
       </div>
 
       <div class="button-box">
         <BaseButton class="btn" @click="markdownRender">Preview</BaseButton>
+        <BaseButton class="btn draft" @click="saveAsDraft"
+          >Save as draft</BaseButton
+        >
       </div>
     </div>
     <div class="img-box">
       <div class="upload-card">
-        <label for="imgInput" class="upload-btn">
+        <label for="imgInput" class="upload-btn" v-loading="imageUploading">
           <SvgIcon iconName="add-pic" class="icon"></SvgIcon>
         </label>
         <input
           id="imgInput"
-          @click="imageUpload"
+          @change="imageUpload"
           type="file"
           accept="image/*"
           class="file-input"
+          ref="imageInputRef"
         />
         <transition-group name="list" tag="div" class="image-preview-box">
           <div
@@ -101,6 +105,7 @@
       </div>
     </div>
     <div class="preview-box">
+      <div class="preview markdown-body" v-html="renderedHtml"></div>
       <div class="platform-box">
         <div
           :class="['icon-box', { selected: selectedPlatform === 'markdown' }]"
@@ -133,16 +138,13 @@
           <SvgIcon iconName="facebook" class="icon"></SvgIcon>
         </div>
       </div>
-      <div class="preview markdown-body" v-html="renderedHtml"></div>
     </div>
   </div>
 </template>
 
 <script>
 import MarkdownIt from "markdown-it";
-import SvgIcon from "../ui/SvgIcon.vue";
 import { imgurUpload } from "@/services/imgur.js";
-import { ElMessage } from "element-plus";
 
 export default {
   data() {
@@ -152,6 +154,9 @@ export default {
       content: null,
       newTag: null,
       tags: ["Tag1", "Tag2", "Tag3"],
+
+      // images
+      imageUploading: false,
       // imageList: [],
       imageList: [
         {
@@ -187,24 +192,38 @@ export default {
       selectedPlatform: "markdown",
     };
   },
-  watch: {
-    imageList(newVal) {
-      console.log(newVal);
-    },
-  },
+  watch: {},
   methods: {
+    saveAsDraft() {
+      console.log("save");
+    },
     copyURL2Clipboard(image) {
-      console.log(navigator.clipboard);
-      navigator.clipboard
-        .writeText(image.url)
-        .then(() => {
-          // 显示复制成功的消息
-          alert("URL copied to clipboard");
-        })
-        .catch((err) => {
-          // 处理复制失败的情况
-          alert("Failed to copy URL: ", err);
-        });
+      // navigator.clipboard 只能在安全环境中使用：localhost / https
+      // navigator.clipboard
+      //   .writeText(image.url)
+      //   .then(() => {
+      //     // 显示复制成功的消息
+      //     alert("URL copied to clipboard");
+      //   })
+      //   .catch((err) => {
+      //     // 处理复制失败的情况
+      //     alert("Failed to copy URL: ", err);
+      //   });
+      // another abandoned way, but works in unsafe environment
+      const text = `![${image.id}](${image.url})`;
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      ElNotification({
+        title: "Success",
+        message: "Image URL copied to clipboard",
+        type: "success",
+      });
+
+      //
     },
     deleteImage(imageId) {
       this.imageList = this.imageList.filter((image) => image.id !== imageId);
@@ -230,23 +249,30 @@ export default {
           });
           return;
         }
+
+        this.imageUploading = true;
         const formData = new FormData();
         formData.append("image", uploadedImage);
         // formData.append("type", "file");
         // formData.append('name', uploadedImage.name);
         // formData.append('title', uploadedImage.name);
         // formData.append('description', uploadedImage.name);
+
         imgurUpload(formData)
           .then((imageInfo) => {
             ElMessage.success("image upload success");
 
             this.$nextTick(() => {
               this.imageList.push(imageInfo);
+              this.imageUploading = false;
             });
           })
           .catch((error) => {
             ElMessage.error(error.message);
+            this.imageUploading = false;
           });
+
+        this.$refs.imageInputRef.value = "";
       }
     },
 
@@ -274,7 +300,6 @@ export default {
       });
     },
   },
-  components: { SvgIcon },
 };
 </script>
 
@@ -290,7 +315,7 @@ export default {
   .edit-box {
     // border: 0.2rem solid rgba($secondary-color, 0.6);
 
-    padding: 0 1rem;
+    // padding: 0 1rem;
     flex: 0 1 45%;
 
     @include flex-box(column);
@@ -310,6 +335,11 @@ export default {
           .label {
             flex: 0 1 10%;
             @include flex-center(row);
+            color: $secondary-color;
+            font-weight: $font-weight-bold;
+            padding: 0 0.5rem;
+            border: 0.2rem solid rgba($secondary-color, 0.8);
+            border-radius: 0.8rem;
           }
           .input {
             flex: auto;
@@ -351,18 +381,28 @@ export default {
 
     .button-box {
       // border: 0.2rem solid rgba($secondary-color, 0.6);
-      flex: 0 1 10%;
+      flex: 0 1 9%;
       @include flex-center(row);
+      gap: 1rem;
       .btn {
         border-radius: 0.8rem;
         width: 60%;
         height: 100%;
+        &.draft {
+          background-color: $third-color;
+          &:hover {
+            background-color: $third-color-dark;
+          }
+        }
       }
     }
   }
   .img-box {
     // border: 0.2rem solid rgba($secondary-color, 0.6);
-
+    // border-radius: 5rem;
+    // border-top: 0.5rem solid rgba($secondary-color, 0.6);
+    // border-bottom: 0.5rem solid rgba($secondary-color, 0.6);
+    // background-color: $secondary-color;
     flex: auto;
     max-width: 10%;
 
@@ -467,18 +507,19 @@ export default {
     flex: 0 1 45%;
     max-width: 45%;
 
-    @include flex-box(column);
+    @include flex-box(row);
     gap: 1rem;
     .platform-box {
       // border: 0.2rem solid rgba($secondary-color, 0.6);
       flex: 0 1 10%;
-      max-height: 10%;
-      @include flex-center(row);
-      gap: 2rem;
+      max-width: 10%;
+      @include flex-center(column);
+      gap: 0.8rem;
+      justify-content: start;
 
       .icon-box {
         @include platform-card();
-        padding: 0.5rem 1.5rem;
+        padding: 0.5rem 0.8rem;
         .icon {
           height: $icon-size-large;
           width: $icon-size-large;
@@ -518,6 +559,29 @@ export default {
 
 .el-dialog.publish-panel-card {
   .el-dialog__body {
+    .other-box {
+      .hashtags {
+        .el-tag {
+          --el-tag-bg-color: #{$secondary-color-dark};
+          --el-tag-border-color: #{$secondary-color};
+          --el-tag-hover-color: #{$primary-color};
+          --el-tag-text-color: #{$primary-color};
+          .el-icon {
+            &:hover {
+              color: $secondary-color;
+            }
+          }
+        }
+        .input-box {
+          .el-button {
+            --el-button-hover-bg-color: #{$secondary-color-dark};
+            --el-button-border-color: #{rgba($secondary-color, 0.3)};
+            --el-button-hover-text-color: #{$primary-color};
+            --el-button-hover-border-color: #{$secondary-color};
+          }
+        }
+      }
+    }
     .edit-box {
       .content-box {
         .el-textarea.content {

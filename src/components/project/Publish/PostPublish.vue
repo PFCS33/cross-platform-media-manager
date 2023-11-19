@@ -4,10 +4,11 @@
       class="publish-panel-card"
       destroy-on-close
       v-model="showEditPanel"
+      :show-close="false"
     >
       <template #header>
         <div class="title-box">
-          <h1 class="title">Edit your article</h1>
+          <h1 class="title">EDIT YOUR POST</h1>
           <div class="time-box">
             <span class="fixed-time"> {{ selecedDay }}</span>
             <div class="accurate-time">
@@ -29,10 +30,28 @@
             >Cancel</BaseButton
           >
           <BaseButton class="button confirm" @click="showEditPanel = false">
-            Confirm
+            Publish
           </BaseButton>
         </span>
       </template>
+    </el-dialog>
+    <el-dialog
+      class="detail-panel-card"
+      destroy-on-close
+      v-model="showDetailPanel"
+      :show-close="false"
+    >
+      <template #header>
+        <div class="title-box">
+          <SvgIcon
+            class="icon"
+            iconName="delete"
+            @click="showDetailPanel = false"
+          ></SvgIcon>
+        </div>
+      </template>
+      <ArticleDetail></ArticleDetail>
+      <template #footer></template>
     </el-dialog>
     <el-calendar class="publish" v-if="showCalendar" v-model="calendar_data">
       <template #date-cell="{ data }">
@@ -75,7 +94,11 @@
               </div>
             </template>
             <div class="body">
-              <div class="plan-card" v-if="plans.get(data.day)">
+              <div
+                class="plan-card"
+                v-if="plans.get(data.day)"
+                @click="openDetailView(plans.get(data.day).data[0].id)"
+              >
                 <div class="title-box">
                   <span class="title">
                     {{ plans.get(data.day).data[0].time.split(" ")[1] }} -
@@ -112,9 +135,11 @@
 
 <script>
 import PublishPanel from "./PublishPanel.vue";
+import ArticleDetail from "@/components/project/ArticleDetail.vue";
 export default {
   components: {
     PublishPanel,
+    ArticleDetail,
   },
 
   data() {
@@ -124,19 +149,31 @@ export default {
       showEditPanel: false,
       selecedDay: null,
       selecedAccurateTime: null,
+      showDetailPanel: false,
     };
+  },
+  computed: {
+    plans() {
+      return this.$store.getters["publish/plans"];
+    },
+    loading() {
+      return this.$store.getters["publish/planLoading"];
+    },
+    error() {
+      return this.$store.getters["publish/planError"];
+    },
   },
   watch: {
     calendar_data(newVal) {
       // get formatted date
-      const date = new Date(newVal);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      const formattedDate = `${year}-${month < 10 ? "0" + month : month}-${
-        day < 10 ? "0" + day : day
-      }`;
-      console.log(formattedDate);
+      // const date = new Date(newVal);
+      // const year = date.getFullYear();
+      // const month = date.getMonth() + 1;
+      // const day = date.getDate();
+      // const formattedDate = `${year}-${month < 10 ? "0" + month : month}-${
+      //   day < 10 ? "0" + day : day
+      // }`;
+      // console.log(formattedDate);
     },
     error(newVal) {
       if (newVal.state) {
@@ -152,18 +189,14 @@ export default {
       }
     },
   },
-  computed: {
-    plans() {
-      return this.$store.getters["publish/plans"];
-    },
-    loading() {
-      return this.$store.getters["publish/loading"];
-    },
-    error() {
-      return this.$store.getters["publish/error"];
-    },
-  },
+
   methods: {
+    openDetailView(id) {
+      this.showDetailPanel = true;
+      this.$nextTick(() => {
+        this.$store.dispatch("publish/getDetailInfo", { id: id });
+      });
+    },
     openEditView(day) {
       this.selecedDay = day;
       this.showEditPanel = true;
@@ -247,8 +280,14 @@ export default {
             font-size: 1rem;
             color: $primary-color;
             font-weight: $font-weight-bold;
-
             transition: color 0.2s ease-out;
+
+            max-height: 2rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
         .platform-box {
@@ -298,27 +337,74 @@ export default {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #a8a8a8;
 }
+
+.el-dialog.detail-panel-card {
+  padding: 1.8rem 2.3rem 1rem 2.3rem;
+  margin-top: 1%;
+  width: 90%;
+  height: 90%;
+  max-height: 90%;
+  border-radius: 1rem;
+  background-color: $background-color-gray;
+  @include flex-box(column);
+  .el-dialog__header {
+    margin-right: 0;
+    padding: 0;
+    .title-box {
+      .icon {
+        position: absolute;
+        top: 0.3rem;
+        right: 0.3rem;
+        @include icon-style($icon-size-large, $secondary-color);
+        transition: fill 0.2s ease-out;
+        cursor: pointer;
+        &:hover {
+          fill: $secondary-color-dark;
+        }
+      }
+    }
+  }
+
+  .el-dialog__body {
+    padding: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    overflow: auto;
+  }
+  .el-dialog__footer {
+    padding: 0;
+  }
+}
+
 .el-dialog.publish-panel-card {
   margin-top: 1%;
   width: 90%;
   height: 90%;
 
-  padding: 0rem 1rem;
+  padding: 1.8rem 2.3rem 1.2rem 2.3rem;
   border-radius: 1rem;
   @include flex-box(column);
+  // gap: 0rem;
   justify-content: space-between;
-  background-color: $background-color;
+  background-color: $background-color-gray;
   --el-color-primary: #{$secondary-color};
 
   .el-dialog__header {
     // flex: 0 1 10%;
+    margin-right: 0;
+    margin-bottom: 0.6rem;
+    // padding: 1.8rem;
+    padding: 0;
+
     .title-box {
       @include flex-box(row);
       align-items: center;
       justify-content: space-between;
-      padding-right: 2rem;
+
       .title {
-        color: $secondary-color;
+        color: $secondary-color-dark;
+        font-size: 2.6rem;
       }
     }
 
@@ -374,22 +460,24 @@ export default {
 
   .el-dialog__footer {
     // flex: 0 1 auto;
-    padding: 0.8rem 1rem;
+    // padding: 0.8rem 1rem;
+    padding: 0;
+
     .dialog-footer {
       @include flex-box(row);
       justify-content: end;
       gap: 1rem;
 
       .button {
-        border-radius: 2rem;
+        border-radius: 0.8rem;
 
         &.cancle {
+        }
+        &.confirm {
           background-color: $third-color;
           &:hover {
             background-color: $third-color-dark;
           }
-        }
-        &.confirm {
         }
       }
     }

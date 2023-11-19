@@ -66,11 +66,11 @@
           <div
             class="info-content-wrapper"
             v-for="info in loggedAccounts"
-            :key="info.platform + info.username"
+            :key="info.id"
           >
             <div class="account-info-card">
               <svgIcon :iconName="info.platform" class="icon"></svgIcon>
-              <span class="username">@ {{ info.username }}</span>
+              <span class="username">@ {{ info.account_name }}</span>
               <div class="flex-div"></div>
               <BaseButton class="button backward" @click="logoutAccount(info)"
                 >Logout</BaseButton
@@ -86,11 +86,11 @@
           <div
             class="info-content-wrapper"
             v-for="info in unLoggedAccounts"
-            :key="info.platform + info.username"
+            :key="info.platform + info.account_name"
           >
             <div class="account-info-card">
               <svgIcon :iconName="info.platform" class="icon"></svgIcon>
-              <span class="username">{{ info.username }}</span>
+              <span class="username">{{ info.account_name }}</span>
               <div class="flex-div"></div>
               <div class="button-box">
                 <BaseButton class="button forward">Login</BaseButton>

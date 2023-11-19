@@ -1,3 +1,4 @@
+const capitalizeFirstLetter = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 async function fetchAuthData(url, payload, context) {
   const data = payload.data;
   const mode = payload.mode;
@@ -38,9 +39,13 @@ async function fetchAuthData(url, payload, context) {
   }
 }
 
-async function getData(url, JWTToken, context) {
+async function getData(url, JWTToken, context, mode = null) {
+  const handlerName = `handle${mode ? capitalizeFirstLetter(mode) : ""}Data`;
+  const loadingName = `set${mode ? capitalizeFirstLetter(mode) : ""}Loading`;
+  const errorName = `set${mode ? capitalizeFirstLetter(mode) : ""}Error`;
+
   try {
-    context.commit("setLoading", true);
+    context.commit(loadingName, true);
 
     let response = await fetch(url, {
       method: "GET",
@@ -52,19 +57,20 @@ async function getData(url, JWTToken, context) {
     if (!response.ok) {
       throw new Error(responseData.message);
     } else {
-      context.commit("setError", {
+      context.commit(errorName, {
         state: false,
         message: responseData.message ? responseData.message : "load succeeded",
       });
-      context.commit("setLoading", false);
-      context.dispatch("handleData", responseData.data);
+      context.commit(loadingName, false);
+
+      context.dispatch(handlerName, responseData.data);
     }
   } catch (error) {
-    context.commit("setError", {
+    context.commit(errorName, {
       state: true,
       message: error.message,
     });
-    context.commit("setLoading", false);
+    context.commit(loadingName, false);
     console.error("error:", error.message);
   }
 }
