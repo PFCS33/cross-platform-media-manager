@@ -1,6 +1,6 @@
 <template>
   <div v-loading="loading" class="detail-wrapper">
-    <div class="detail-box" v-if="showContent && showInteractionInfo">
+    <div class="detail-box" v-if="showContent">
       <div class="post-box">
         <div class="other-box">
           <div class="title-box">
@@ -16,28 +16,13 @@
               #{{ tag }}
             </el-tag>
           </div>
-          <div class="data-box">
-            <div class="interaction-box">
-              <div class="box">
-                <SvgIcon iconName="like" class="icon"> </SvgIcon>
-                <span class="number"> {{ interactionInfo.links }}</span>
-              </div>
-              <div class="box">
-                <SvgIcon iconName="comment" class="icon"> </SvgIcon>
-                <span class="number">{{ interactionInfo.comments }}</span>
-              </div>
-              <div class="box">
-                <SvgIcon iconName="forward" class="icon"> </SvgIcon>
-                <span class="number">{{ interactionInfo.forwards }}</span>
-              </div>
-            </div>
-            <div class="time-box">
-              <span class="time">{{ scheduled_day }}</span>
-              <span class="time">{{ scheduled_time }}</span>
-              <el-tag :type="publish_state.type" class="publish_state">{{
-                publish_state.state
-              }}</el-tag>
-            </div>
+
+          <div class="time-box">
+            <span class="time">{{ scheduled_day }}</span>
+            <span class="time">{{ scheduled_time }}</span>
+            <!-- <el-tag :type="publish_state.type" class="publish_state">{{
+              publish_state.state
+            }}</el-tag> -->
           </div>
         </div>
         <div class="content-box">
@@ -47,16 +32,24 @@
       <div class="divider"></div>
       <div class="accounts-box">
         <div v-for="account in accountsInfo" class="account-card">
-          <div class="icon-box">
-            <SvgIcon :iconName="account.platform" class="icon"></SvgIcon>
+          <div class="info-box">
+            <div class="icon-box">
+              <SvgIcon :iconName="account.platform" class="icon"></SvgIcon>
+            </div>
+            <div class="content-box">
+              <span class="name">{{ account.account_name }}</span>
+              <span class="time-box">
+                <span class="time">{{
+                  account.publish_time.split(" ")[0]
+                }}</span>
+                <span class="time">{{
+                  account.publish_time.split(" ")[1]
+                }}</span>
+              </span>
+            </div>
           </div>
-          <div class="content-box">
-            <span class="name">{{ account.account_name }}</span>
-            <span class="time-box">
-              <span class="time">{{ account.publish_time.split(" ")[0] }}</span>
-              <span class="time">{{ account.publish_time.split(" ")[1] }}</span>
-            </span>
-
+          <div class="divider"></div>
+          <div class="post-data-box">
             <div class="link-box">
               <a class="link" :href="account.link" target="_blank">Post URL</a>
               <el-tag
@@ -65,6 +58,20 @@
                 size="small"
                 >{{ stateWords[account.state] }}</el-tag
               >
+            </div>
+            <div class="interaction-box">
+              <div class="box">
+                <SvgIcon iconName="like" class="icon"> </SvgIcon>
+                <span class="number"> {{ account.likes }}</span>
+              </div>
+              <div class="box">
+                <SvgIcon iconName="comment" class="icon"> </SvgIcon>
+                <span class="number">{{ account.comments }}</span>
+              </div>
+              <div class="box">
+                <SvgIcon iconName="forward" class="icon"> </SvgIcon>
+                <span class="number">{{ account.shares }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -79,7 +86,7 @@ export default {
   data() {
     return {
       showContent: false,
-      showInteractionInfo: false,
+
       tagType: ["warning", "danger", "success"],
       stateWords: ["Draft", "Failure", "Success"],
       md: new MarkdownIt("commonmark", {
@@ -90,10 +97,6 @@ export default {
     };
   },
   computed: {
-    interactionInfo() {
-      return this.$store.getters["publish/interactionInfo"];
-    },
-
     detailInfo() {
       return this.$store.getters["publish/detailInfo"];
     },
@@ -138,9 +141,6 @@ export default {
         type: type,
       };
     },
-    interactionLoading() {
-      return this.$store.getters["publish/interactionLoading"];
-    },
 
     loading() {
       return this.$store.getters["publish/detailLoading"];
@@ -150,11 +150,6 @@ export default {
     detailInfo(newVal) {
       if (newVal) {
         this.showContent = true;
-      }
-    },
-    interactionInfo(newVal) {
-      if (newVal) {
-        this.showInteractionInfo = true;
       }
     },
   },
@@ -200,53 +195,22 @@ export default {
           }
         }
 
-        .data-box {
-          user-select: none;
+        .time-box {
+          //   border: 1px solid red;
+          flex: 0 1 30%;
           @include flex-box(row);
           align-items: center;
-          justify-content: space-between;
-          .interaction-box {
-            // border: 1px solid red;
-            flex: 0 1 20%;
-            @include flex-box(row);
-            align-items: center;
+          justify-content: end;
+          gap: 1rem;
 
-            gap: 1.5rem;
-
-            .box {
-              @include flex-box(row);
-              gap: 0.2rem;
-              .icon {
-                @include icon-style(
-                  calc($icon-size-small - 0.5rem),
-                  $third-color
-                );
-              }
-              .number {
-                font-size: 1.6rem;
-                color: $secondary-color;
-                @include flex-box(row);
-                align-items: center;
-              }
-            }
-          }
-
-          .time-box {
-            //   border: 1px solid red;
-            flex: 0 1 30%;
-            @include flex-box(row);
-            align-items: center;
-            justify-content: end;
-            gap: 1rem;
-
-            .time {
-              background-color: $secondary-color-dark;
-              color: $third-color-light;
-              padding: 0.3rem 0.5rem;
-              border-radius: 0.8rem;
-            }
+          .time {
+            background-color: $secondary-color-dark;
+            color: $third-color-light;
+            padding: 0.3rem 0.5rem;
+            border-radius: 0.8rem;
           }
         }
+
         .tags-box {
           flex: 1 0 auto;
           //   border: 1px solid red;
@@ -302,41 +266,60 @@ export default {
         width: fit-content;
         padding: 0.6rem 2rem 0.6rem 0.8rem;
 
-        gap: 0.6rem;
-        @include flex-box(row);
+        gap: 0.8rem;
+        // gap: 0rem;
+        @include flex-box(column);
+        justify-content: start;
         transition: box-shadow 0.2s ease-out, transform 0.2s ease-out;
 
         &:hover {
           transform: scaleY(1.05) scaleX(1.02);
           box-shadow: 0.2rem 0.2rem 0.4rem 0rem rgba(0, 0, 0, 0.2);
         }
-        .icon-box {
-          @include flex-center();
-          .icon {
-            @include icon-style($icon-size-large, $secondary-color);
-          }
-        }
-        .content-box {
-          @include flex-box(column);
-          gap: 0.4rem;
 
-          .name {
-            // @include flex-center();
-            color: $secondary-color;
-            font-size: 1.5rem;
-            font-weight: $font-weight-bold;
-          }
-          .time-box {
-            @include flex-box(row);
-            gap: 0.4rem;
-            .time {
-              font-size: 1.2rem;
-              background-color: $secondary-color-dark;
-              color: $third-color-light;
-              padding: 0.3rem 0.5rem;
-              border-radius: 0.8rem;
+        .info-box {
+          @include flex-box(row);
+          gap: 0.6rem;
+          .icon-box {
+            @include flex-center();
+            .icon {
+              @include icon-style($icon-size-large, $secondary-color);
             }
           }
+          .content-box {
+            @include flex-box(column);
+            gap: 0.4rem;
+
+            .name {
+              // @include flex-center();
+              color: $secondary-color;
+              font-size: 1.5rem;
+              font-weight: $font-weight-bold;
+            }
+            .time-box {
+              @include flex-box(row);
+              gap: 0.4rem;
+              .time {
+                font-size: 1.2rem;
+                background-color: $secondary-color-dark;
+                color: $third-color-light;
+                padding: 0.3rem 0.5rem;
+                border-radius: 0.8rem;
+              }
+            }
+          }
+        }
+        .divider {
+          height: 0.3rem;
+          width: 100%;
+          margin: 0;
+          background-color: rgba($secondary-color, 0.4);
+          border-radius: 5rem;
+        }
+
+        .post-data-box {
+          @include flex-box(column);
+          gap: 0.3rem;
           .link-box {
             @include flex-box(row);
             align-items: center;
@@ -353,6 +336,31 @@ export default {
               &:hover {
                 color: $third-color-dark;
                 text-decoration: underline;
+              }
+            }
+          }
+
+          .interaction-box {
+            // border: 1px solid red;
+            @include flex-box(row);
+            align-items: center;
+
+            gap: 1.5rem;
+
+            .box {
+              @include flex-box(row);
+              gap: 0.2rem;
+              .icon {
+                @include icon-style(
+                  calc($icon-size-small - 0.5rem),
+                  $third-color
+                );
+              }
+              .number {
+                font-size: 1.3rem;
+                color: $secondary-color;
+                @include flex-box(row);
+                align-items: center;
               }
             }
           }

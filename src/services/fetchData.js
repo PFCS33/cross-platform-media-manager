@@ -25,7 +25,7 @@ async function fetchAuthData(url, payload, context) {
     });
     context.commit("setLoading", false);
     context.dispatch("handleData", {
-      data: responseData,
+      data: responseData.data,
       mode: mode,
     });
   } catch (error) {

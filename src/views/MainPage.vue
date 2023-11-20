@@ -1,6 +1,10 @@
 <template>
   <div class="container">
-    <Sidebar class="sidebar" :userName="userInfo.name"></Sidebar>
+    <Sidebar
+      class="sidebar"
+      :userName="userInfo.name"
+      :avatar="userInfo.avatar"
+    ></Sidebar>
     <div class="content-box">
       <router-view v-slot="slotProps">
         <transition name="route" mode="out-in">

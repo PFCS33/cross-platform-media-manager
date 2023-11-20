@@ -19,11 +19,12 @@ export default {
 
       // JWTToken: null,
       JWTToken:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6IkFsZXgiLCJpYXQiOjE3MjAwMzEyMjB9.speYd0eX-HHBLUIjts0fom8eTF9UJYNQDp1MzpHZHp4",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6Im1hcmN5IiwiaWF0IjoxNzIwMDMxMjIwfQ.BCDIJO7w0FQOZKJXCM0D5IpvWNOab2XRB9DbELm2D48",
       // userInfo: null,
       userInfo: {
-        name: "Alex",
+        name: "Marcy",
         id: "1",
+        avatar: "https://i.imgur.com/Znxxtmm.jpg",
       },
     };
   },
@@ -104,6 +105,7 @@ export default {
         const userInfo = {
           id: JWTTokenPayload.sub,
           name: JWTTokenPayload.name,
+          avatar: payload.data.avatar,
         };
         context.commit("setUserInfo", userInfo);
       }
