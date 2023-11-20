@@ -219,6 +219,7 @@ export default {
           justify-content: center;
           align-items: center;
           gap: 0.8rem;
+          margin-bottom: 0.2rem;
 
           .tag {
             user-select: none;
@@ -252,7 +253,7 @@ export default {
     }
     .accounts-box {
       flex: 0 1 30%;
-      padding-top: 2rem;
+      margin-top: 2rem;
       //   border: 1px solid red;
 
       @include flex-box(column);

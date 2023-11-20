@@ -39,6 +39,47 @@ async function fetchAuthData(url, payload, context) {
   }
 }
 
+async function postData(url, payload, JWTToken, context, mode = null) {
+  const handlerName = `handle${mode ? capitalizeFirstLetter(mode) : ""}Data`;
+  const loadingName = `set${mode ? capitalizeFirstLetter(mode) : ""}Loading`;
+  const errorName = `set${mode ? capitalizeFirstLetter(mode) : ""}Error`;
+  const data = payload;
+
+  try {
+    context.commit(loadingName, true);
+
+    let response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + JWTToken,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message);
+    } else {
+      context.commit(errorName, {
+        state: false,
+        message: responseData.message ? responseData.message : "load succeeded",
+      });
+
+      context.commit(loadingName, false);
+      context.dispatch(handlerName, responseData.data);
+    }
+  } catch (error) {
+    context.commit(errorName, {
+      state: true,
+      message: error.message,
+    });
+    context.commit(loadingName, false);
+    console.error("error:", error.message);
+  }
+}
+
 async function getData(url, JWTToken, context, mode = null) {
   const handlerName = `handle${mode ? capitalizeFirstLetter(mode) : ""}Data`;
   const loadingName = `set${mode ? capitalizeFirstLetter(mode) : ""}Loading`;
@@ -54,6 +95,7 @@ async function getData(url, JWTToken, context, mode = null) {
       },
     });
     let responseData = await response.json();
+
     if (!response.ok) {
       throw new Error(responseData.message);
     } else {
@@ -75,4 +117,4 @@ async function getData(url, JWTToken, context, mode = null) {
   }
 }
 
-export { fetchAuthData, getData };
+export { fetchAuthData, getData, postData };

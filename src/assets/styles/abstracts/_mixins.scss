@@ -53,14 +53,36 @@
   }
 }
 
-@mixin router-animation() {
+@mixin pull-animation($offset: 3rem) {
+  .pull-enter-from,
+  .pull-leave-to {
+    opacity: 0;
+    transform: translateX($offset);
+  }
+
+  .pull-enter-to,
+  .pull-leave-from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .pull-enter-active {
+    transition: all 0.15s ease-out;
+  }
+
+  .pull-leave-active {
+    transition: all 0.15s ease-in;
+  }
+}
+
+@mixin router-animation($offset: 3rem) {
   .route-enter-from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-$offset);
   }
   .route-leave-to {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY($offset);
   }
 
   .route-enter-to,
