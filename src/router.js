@@ -13,7 +13,7 @@ import PostPublishPage from "@/components/project/publish/PostPublish.vue";
 import HistoryPage from "@/components/project/History.vue";
 import StatisticPage from "./components/project/Statistic.vue";
 import DraftPage from "@/components/project/DraftBot.vue";
-import ConfigPage from "./components/project/Config.vue";
+import ConfigPage from "./components/project/config/Config.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),

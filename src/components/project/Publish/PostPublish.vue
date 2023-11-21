@@ -29,7 +29,7 @@
           <BaseButton class="button cancle" @click="showEditPanel = false"
             >Cancel</BaseButton
           >
-          <BaseButton class="button confirm" @click="showEditPanel = false">
+          <BaseButton class="button confirm" @click="publishPost">
             Publish
           </BaseButton>
         </span>
@@ -135,7 +135,7 @@
 
 <script>
 import PublishPanel from "./PublishPanel.vue";
-import ArticleDetail from "@/components/project/ArticleDetail.vue";
+import ArticleDetail from "@/components/project/publish/ArticleDetail.vue";
 export default {
   components: {
     PublishPanel,
@@ -191,6 +191,36 @@ export default {
   },
 
   methods: {
+    async publishPost() {
+      //TODO: GET Data
+      const content =
+        "Today marks the *beginning* of my journey in the **mystical world of Rivellon**, part of the acclaimed _'Divinity: Original Sin 2'_ adventure. Here's what I'm looking forward to:\n\n- **Exploring Vast Landscapes**: Discovering every hidden nook and cranny in this beautifully crafted world.\n- **Engaging in Tactical Combat**: Testing my skills against Rivellon's most challenging adversaries.\n- **Making Meaningful Choices**: Every decision I make will shape my journey in unexpected ways.\n\n> \"In the world of Rivellon, every choice carries weight and consequence.\"\n\nFollow my adventure and share your own experiences:\n- ![Rivellon Landscape](https://i.imgur.com/c0uLyT7.png) *Stunning landscapes await!*\n- [Divinity Community Forum](https://www.divinity.com/forum)";
+      const title = "Divinity: Original Sin 2";
+      const username = "test";
+      const password = "test";
+      const url = "http://127.0.0.1:5000" + "/wordpress_post";
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: content,
+          title: title,
+          username: username,
+          password: password,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.log("error");
+        });
+
+      // showEditPanel = false
+    },
     openDetailView(id) {
       this.showDetailPanel = true;
       this.$nextTick(() => {

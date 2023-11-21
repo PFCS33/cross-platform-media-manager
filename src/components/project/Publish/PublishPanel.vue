@@ -147,18 +147,24 @@ import MarkdownIt from "markdown-it";
 import { imgurUpload } from "@/services/imgur.js";
 
 export default {
+  props: {
+    initialValues: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
   data() {
     return {
       // input values
-      title: null,
-      content: null,
+      title: this.initialValues.title || null,
+      content: this.initialValues.content || null,
       newTag: null,
-      tags: ["Tag1", "Tag2", "Tag3"],
+      tags: this.initialValues.topics || ["Tag1", "Tag2", "Tag3"],
 
       // images
       imageUploading: false,
       // imageList: [],
-      imageList: [
+      imageList: this.initialValues.images || [
         {
           id: "1",
           url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
@@ -194,8 +200,44 @@ export default {
   },
   watch: {},
   methods: {
-    saveAsDraft() {
-      console.log("save");
+    async saveAsDraft() {
+      // console.log("save");
+      //TODO: GET Data
+
+      //       - **id**: INTEGER - 草稿的唯一标识符。
+      // - **user_id**: INTEGER - 创建草稿的用户ID，引用 User 表的外键。
+      // - **title**: STRING - 草稿标题。
+      // - **topics**: ARRAY - 草稿主题列表。
+      // - **content**: TEXT - 草稿内容。
+      // - **scheduled_time**: TIMESTAMP - 计划发布时间。
+      // - **last_edit_time**: TIMESTAMP - 上次编辑时间。
+      const content =
+        "Today marks the *beginning* of my journey in the **mystical world of Rivellon**, part of the acclaimed _'Divinity: Original Sin 2'_ adventure. Here's what I'm looking forward to:\n\n- **Exploring Vast Landscapes**: Discovering every hidden nook and cranny in this beautifully crafted world.\n- **Engaging in Tactical Combat**: Testing my skills against Rivellon's most challenging adversaries.\n- **Making Meaningful Choices**: Every decision I make will shape my journey in unexpected ways.\n\n> \"In the world of Rivellon, every choice carries weight and consequence.\"\n\nFollow my adventure and share your own experiences:\n- ![Rivellon Landscape](https://i.imgur.com/c0uLyT7.png) *Stunning landscapes await!*\n- [Divinity Community Forum](https://www.divinity.com/forum)";
+      const title = "Divinity: Original Sin 2";
+      // const username = "test";
+      // const password = "test";
+      const url = "http://127.0.0.1:5000" + "/insert_script";
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: 1,
+          title: title,
+          topics: "asd asd sad sad",
+          scheduled_time: "2020-01-30 12:00",
+          last_edit_time: "2020-01-30 12:00",
+          content: content,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.log("error");
+        });
     },
     copyURL2Clipboard(image) {
       // navigator.clipboard 只能在安全环境中使用：localhost / https

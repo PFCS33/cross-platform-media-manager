@@ -6,6 +6,7 @@ export default {
     return {
       drafts: null,
       deleteResult: null,
+      detail: null,
 
       draftsLoading: false,
       draftsError: {
@@ -18,9 +19,18 @@ export default {
         state: true,
         message: "",
       },
+
+      detailLoading: false,
+      detailError: {
+        state: true,
+        message: "",
+      },
     };
   },
   getters: {
+    detail(state) {
+      return state.detail;
+    },
     drafts(state) {
       return state.drafts;
     },
@@ -40,8 +50,19 @@ export default {
     deleteError(state) {
       return state.deleteError;
     },
+
+    detailLoading(state) {
+      return state.detailLoading;
+    },
+    detailError(state) {
+      return state.detailError;
+    },
   },
   mutations: {
+    setDetail(state, payload) {
+      state.detail = payload;
+    },
+
     setDrafts(state, payload) {
       state.drafts = payload;
     },
@@ -61,8 +82,20 @@ export default {
     setDeleteError(state, payload) {
       state.deleteError = payload;
     },
+    setDetailLoading(state, payload) {
+      state.detailLoading = payload;
+    },
+    setDetailError(state, payload) {
+      state.detailError = payload;
+    },
   },
   actions: {
+    getDetailInfo(context, payload) {
+      const id = payload.id;
+      const JWTToken = context.rootGetters["auth/JWTToken"];
+      const url = context.rootGetters["auth/baseUrl"] + `/draft/${id}`;
+      getData(url, JWTToken, context, "detail");
+    },
     getDraftsInfo(context, payload) {
       const JWTToken = context.rootGetters["auth/JWTToken"];
       const url = context.rootGetters["auth/baseUrl"] + "/draft/list";
@@ -85,6 +118,11 @@ export default {
       const JWTToken = context.rootGetters["auth/JWTToken"];
       const url = context.rootGetters["auth/baseUrl"] + "/draft/delete";
       postData(url, payload.selectedIds, JWTToken, context, "delete");
+    },
+    handleDeleteData(context, payload) {
+      const data = payload;
+
+      context.commit("setDeleteResult", data);
     },
 
     handleDeleteData(context, payload) {

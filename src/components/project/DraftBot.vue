@@ -230,6 +230,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch("draft/getDraftsInfo");
+    this.testPost();
   },
   beforeDestroy() {
     this.removeEventListeners();
@@ -256,6 +257,28 @@ export default {
     },
   },
   methods: {
+    async testPost() {
+      const url = "http://127.0.0.1:5000" + "/script_all";
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: 1,
+        }),
+      })
+        .then((res) => {
+          console.log(res);
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     disabledDate(time) {
       return time.getTime() < Date.now();
     },
