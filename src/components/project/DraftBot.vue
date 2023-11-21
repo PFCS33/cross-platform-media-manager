@@ -1,5 +1,47 @@
 <template>
   <div class="draft-box" v-loading="loading || deleteLoading">
+    <el-dialog
+      class="publish-panel-card draft-mode"
+      destroy-on-close
+      v-model="showEditPanel"
+      :show-close="false"
+    >
+      <template #header>
+        <div class="title-box">
+          <h1 class="title">EDIT YOUR POST</h1>
+          <div class="time-box">
+            <div class="fixed-time">
+              <el-date-picker
+                v-model="selecedDate"
+                type="date"
+                placeholder="Pick a day"
+                :disabled-date="disabledDate"
+              />
+            </div>
+            <div class="accurate-time">
+              <el-time-select
+                v-model="selecedAccurateTime"
+                start="00:00"
+                step="00:01"
+                end="24:00"
+                placeholder="Select time"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+      <PublishPanel></PublishPanel>
+      <template #footer>
+        <span class="dialog-footer">
+          <BaseButton class="button cancle" @click="showEditPanel = false"
+            >Cancel</BaseButton
+          >
+          <BaseButton class="button confirm" @click="showEditPanel = false">
+            Publish
+          </BaseButton>
+        </span>
+      </template>
+    </el-dialog>
     <div class="button-box">
       <transition name="pull">
         <div v-if="deleteMode">
@@ -69,7 +111,11 @@
                 @click="deleteDraft(index)"
                 >Delete</BaseButton
               >
-              <BaseButton class="confirm btn">Edit & Publish</BaseButton>
+              <BaseButton
+                class="confirm btn"
+                @click="openEditPanel(draftData.id)"
+                >Edit & Publish</BaseButton
+              >
             </div>
             <SvgIcon iconName="check" class="check-icon"></SvgIcon>
           </BaseCard>
@@ -90,9 +136,18 @@
 </template>
 
 <script>
+import PublishPanel from "@/components/project/publish/PublishPanel.vue";
 export default {
+  components: {
+    PublishPanel,
+  },
   data() {
     return {
+      // edit
+      selecedDate: null,
+      selecedAccurateTime: null,
+
+      showEditPanel: false,
       initialFlag: true,
 
       deleteMode: false,
@@ -201,6 +256,12 @@ export default {
     },
   },
   methods: {
+    disabledDate(time) {
+      return time.getTime() < Date.now();
+    },
+    openEditPanel(id) {
+      this.showEditPanel = true;
+    },
     deleteDraft(index) {
       this.selectedCards.push(index);
       this.deleteDrafts([index]);
@@ -529,5 +590,20 @@ export default {
 .el-pagination.draft-pagination {
   --el-color-primary: #{$secondary-color};
   --el-text-color-primary: #{$secondary-color};
+}
+
+.el-dialog.publish-panel-card.draft-mode {
+  .el-dialog__header {
+    .time-box {
+      .fixed-time {
+        padding: 0;
+        background-color: $background-color-white;
+        border-radius: 0.4rem;
+      }
+    }
+  }
+}
+.el-date-picker {
+  --el-color-primary: #{$secondary-color};
 }
 </style>

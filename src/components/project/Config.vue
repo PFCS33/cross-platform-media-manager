@@ -198,6 +198,7 @@ export default {
   }
   .el-switch {
     --el-switch-on-color: #{$third-color};
+    --el-switch-off-color: #{rgba($secondary-color, 0.3)};
   }
 }
 </style>
