@@ -119,10 +119,9 @@ export default {
       const url = context.rootGetters["auth/baseUrl"] + "/draft/delete";
       postData(url, payload.selectedIds, JWTToken, context, "delete");
     },
-    handleDeleteData(context, payload) {
+    handleDetailData(context, payload) {
       const data = payload;
-
-      context.commit("setDeleteResult", data);
+      context.commit("setDetail", data);
     },
 
     handleDeleteData(context, payload) {

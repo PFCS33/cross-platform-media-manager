@@ -1,5 +1,5 @@
 <template>
-  <div class="draft-box" v-loading="loading || deleteLoading">
+  <div class="draft-box" v-loading="loading || deleteLoading || detailLoading">
     <el-dialog
       class="publish-panel-card draft-mode"
       destroy-on-close
@@ -12,7 +12,7 @@
           <div class="time-box">
             <div class="fixed-time">
               <el-date-picker
-                v-model="selecedDate"
+                v-model="selectedDay"
                 type="date"
                 placeholder="Pick a day"
                 :disabled-date="disabledDate"
@@ -21,22 +21,27 @@
             <div class="accurate-time">
               <el-time-select
                 v-model="selecedAccurateTime"
-                start="00:00"
+                :start="timeSelectedStart"
                 step="00:01"
                 end="24:00"
-                placeholder="Select time"
+                placeholder="Publish Now"
               />
             </div>
           </div>
         </div>
       </template>
-      <PublishPanel></PublishPanel>
+      <PublishPanel
+        :initialValues="draftDetail"
+        :selectedDay="selectedDayString"
+        :selectedTime="selecedAccurateTime"
+        ref="publishPanel"
+      ></PublishPanel>
       <template #footer>
         <span class="dialog-footer">
           <BaseButton class="button cancle" @click="showEditPanel = false"
             >Cancel</BaseButton
           >
-          <BaseButton class="button confirm" @click="showEditPanel = false">
+          <BaseButton class="button confirm" @click="postPublish">
             Publish
           </BaseButton>
         </span>
@@ -144,7 +149,7 @@ export default {
   data() {
     return {
       // edit
-      selecedDate: null,
+      selectedDay: null,
       selecedAccurateTime: null,
 
       showEditPanel: false,
@@ -168,6 +173,20 @@ export default {
     };
   },
   watch: {
+    draftDetail(newVal) {
+      if (newVal) {
+        if (newVal.scheduled_time) {
+          const date = newVal.scheduled_time.split(" ")[0];
+          const time = newVal.scheduled_time.split(" ")[1];
+          this.selectedDay = new Date(date);
+          this.selecedAccurateTime = time;
+        }
+
+        this.$nextTick(() => {
+          this.showEditPanel = true;
+        });
+      }
+    },
     deleteResult(newVal) {
       if (newVal) {
         const selectedIds = this.selectedCards.map(
@@ -227,15 +246,26 @@ export default {
         ElMessage.success(`${newVal.message}`);
       }
     },
+    detailError(newVal) {
+      if (newVal.state) {
+        ElMessage.error(`Error: ${newVal.message}`);
+        setTimeout(() => ElMessage.error("Please try again"), 500);
+      } else {
+        ElMessage.success(`${newVal.message}`);
+      }
+    },
   },
   mounted() {
     this.$store.dispatch("draft/getDraftsInfo");
-    this.testPost();
+    // this.testPost();
   },
   beforeDestroy() {
     this.removeEventListeners();
   },
   computed: {
+    draftDetail() {
+      return this.$store.getters["draft/detail"];
+    },
     drafts() {
       return this.$store.getters["draft/drafts"];
     },
@@ -255,8 +285,29 @@ export default {
     deleteError() {
       return this.$store.getters["draft/deleteError"];
     },
+    detailLoading() {
+      return this.$store.getters["draft/detailLoading"];
+    },
+    detailError() {
+      return this.$store.getters["draft/detailError"];
+    },
+    timeSelectedStart() {
+      return this.LessThanToday(this.selectedDay)
+        ? this.formatTime(new Date())
+        : "00:00";
+    },
+    selectedDayString() {
+      const date = this.selectedDay;
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份从0开始计数
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    },
   },
   methods: {
+    postPublish() {
+      this.$refs.publishPanel.openAccountDialog();
+    },
     async testPost() {
       const url = "http://127.0.0.1:5000" + "/script_all";
       const res = await fetch(url, {
@@ -279,11 +330,27 @@ export default {
           console.log(error);
         });
     },
+    LessThanToday(dateStr) {
+      const today = new Date();
+
+      const todayDateOnly = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+
+      return new Date(dateStr) < todayDateOnly;
+    },
+    formatTime(date) {
+      let hours = date.getHours().toString().padStart(2, "0");
+      let minutes = date.getMinutes().toString().padStart(2, "0");
+      return `${hours}:${minutes}`;
+    },
     disabledDate(time) {
       return time.getTime() < Date.now();
     },
     openEditPanel(id) {
-      this.showEditPanel = true;
+      this.$store.dispatch("draft/getDetailInfo", { id: id });
     },
     deleteDraft(index) {
       this.selectedCards.push(index);

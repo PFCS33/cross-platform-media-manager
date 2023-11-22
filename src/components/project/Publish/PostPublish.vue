@@ -10,20 +10,31 @@
         <div class="title-box">
           <h1 class="title">EDIT YOUR POST</h1>
           <div class="time-box">
-            <span class="fixed-time"> {{ selecedDay }}</span>
+            <span class="fixed-time"> {{ selectedDay }}</span>
+            <BaseButton
+              :class="['btn', { active: publishNow }]"
+              @click="togglePublishNow"
+              v-if="isToday(selectedDay)"
+              >Publish Now</BaseButton
+            >
             <div class="accurate-time">
               <el-time-select
                 v-model="selecedAccurateTime"
-                start="00:00"
+                :start="timeSelectedStart"
                 step="00:01"
-                end="24:00"
-                placeholder="Select time"
+                end="23:59"
+                placeholder="Select Time"
+                :disabled="publishNow"
               />
             </div>
           </div>
         </div>
       </template>
-      <PublishPanel></PublishPanel>
+      <PublishPanel
+        :selectedDay="selectedDay"
+        :selectedTime="selecedAccurateTime"
+        ref="publishPanel"
+      ></PublishPanel>
       <template #footer>
         <span class="dialog-footer">
           <BaseButton class="button cancle" @click="showEditPanel = false"
@@ -62,7 +73,7 @@
             </p>
             <transition name="fade-icon" mode="out-in">
               <SvgIcon
-                v-if="data.isSelected"
+                v-if="data.isSelected && !isPastDate(data.day)"
                 iconName="add"
                 class="icon"
                 @click="openEditView(data.day)"
@@ -77,9 +88,14 @@
             <template #content>
               <div
                 class="more-card"
-                v-for="plan in plans.get(data.day).data.slice(1)"
+                v-for="(plan, index) in plans.get(data.day).data.slice(1)"
               >
-                <div class="plan-card">
+                <div
+                  class="plan-card"
+                  @click="
+                    openDetailView(plans.get(data.day).data[index + 1].id)
+                  "
+                >
                   <div class="title-box">
                     <span class="title">
                       {{ plan.time.split(" ")[1] }} - {{ plan.title }}
@@ -144,11 +160,13 @@ export default {
 
   data() {
     return {
+      publishNow: false,
+      selectedDay: null,
+      selecedAccurateTime: null,
+
       calendar_data: null,
       showCalendar: false,
       showEditPanel: false,
-      selecedDay: null,
-      selecedAccurateTime: null,
       showDetailPanel: false,
     };
   },
@@ -161,6 +179,16 @@ export default {
     },
     error() {
       return this.$store.getters["publish/planError"];
+    },
+
+    timeSelectedStart() {
+      return this.isToday(this.selectedDay)
+        ? this.formatTime(new Date())
+        : "00:00";
+    },
+
+    currentTime() {
+      return this.formatTime(new Date());
     },
   },
   watch: {
@@ -191,33 +219,57 @@ export default {
   },
 
   methods: {
-    async publishPost() {
+    togglePublishNow() {
+      this.publishNow = !this.publishNow;
+    },
+    isPastDate(day) {
+      const today = new Date();
+      const todayDateOnly = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+      return new Date(day) < todayDateOnly;
+    },
+    isToday(dateStr) {
+      const today = new Date();
+      const selectedDate = new Date(dateStr);
+      return selectedDate.toDateString() === today.toDateString();
+    },
+    formatTime(date) {
+      let hours = date.getHours().toString().padStart(2, "0");
+      let minutes = date.getMinutes().toString().padStart(2, "0");
+      return `${hours}:${minutes}`;
+    },
+    publishPost() {
+      console.log(this.$refs.publishPanel);
+      this.$refs.publishPanel.openAccountDialog();
       //TODO: GET Data
-      const content =
-        "Today marks the *beginning* of my journey in the **mystical world of Rivellon**, part of the acclaimed _'Divinity: Original Sin 2'_ adventure. Here's what I'm looking forward to:\n\n- **Exploring Vast Landscapes**: Discovering every hidden nook and cranny in this beautifully crafted world.\n- **Engaging in Tactical Combat**: Testing my skills against Rivellon's most challenging adversaries.\n- **Making Meaningful Choices**: Every decision I make will shape my journey in unexpected ways.\n\n> \"In the world of Rivellon, every choice carries weight and consequence.\"\n\nFollow my adventure and share your own experiences:\n- ![Rivellon Landscape](https://i.imgur.com/c0uLyT7.png) *Stunning landscapes await!*\n- [Divinity Community Forum](https://www.divinity.com/forum)";
-      const title = "Divinity: Original Sin 2";
-      const username = "test";
-      const password = "test";
-      const url = "http://127.0.0.1:5000" + "/wordpress_post";
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: content,
-          title: title,
-          username: username,
-          password: password,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((error) => {
-          console.log("error");
-        });
+      // const content =
+      //   "Today marks the *beginning* of my journey in the **mystical world of Rivellon**, part of the acclaimed _'Divinity: Original Sin 2'_ adventure. Here's what I'm looking forward to:\n\n- **Exploring Vast Landscapes**: Discovering every hidden nook and cranny in this beautifully crafted world.\n- **Engaging in Tactical Combat**: Testing my skills against Rivellon's most challenging adversaries.\n- **Making Meaningful Choices**: Every decision I make will shape my journey in unexpected ways.\n\n> \"In the world of Rivellon, every choice carries weight and consequence.\"\n\nFollow my adventure and share your own experiences:\n- ![Rivellon Landscape](https://i.imgur.com/c0uLyT7.png) *Stunning landscapes await!*\n- [Divinity Community Forum](https://www.divinity.com/forum)";
+      // const title = "Divinity: Original Sin 2";
+      // const username = "test";
+      // const password = "test";
+      // const url = "http://127.0.0.1:5000" + "/wordpress_post";
+      // const res = await fetch(url, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     content: content,
+      //     title: title,
+      //     username: username,
+      //     password: password,
+      //   }),
+      // })
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     console.log(data);
+      //   })
+      //   .catch((error) => {
+      //     console.log("error");
+      //   });
 
       // showEditPanel = false
     },
@@ -228,7 +280,8 @@ export default {
       });
     },
     openEditView(day) {
-      this.selecedDay = day;
+      this.selectedDay = day;
+      this.selecedAccurateTime = this.currentTime;
       this.showEditPanel = true;
     },
     toggleMoreInfo(info) {
@@ -453,6 +506,15 @@ export default {
         padding: 0.7rem;
 
         border-radius: 0.4rem;
+      }
+      .btn {
+        border-radius: 0.4rem;
+        &:hover {
+        }
+        &.active {
+          color: $third-color-light;
+          background-color: $secondary-color-dark;
+        }
       }
 
       .accurate-time {

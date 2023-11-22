@@ -1,5 +1,17 @@
 <template>
   <div class="panel-box">
+    <el-dialog
+      class="account-panel-card"
+      destroy-on-close
+      v-model="showAccountPanel"
+      :show-close="false"
+    >
+      <template #header>
+        <div class="title-box">
+          <h1 class="title">CHOOSE YOUR ACCOUNTS</h1>
+        </div>
+      </template>
+    </el-dialog>
     <div class="edit-box">
       <div class="other-box">
         <div class="title">
@@ -152,9 +164,19 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    selectedDay: {
+      type: String,
+      default: null,
+    },
+    selectedTime: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
+      //
+      showAccountPanel: false,
       // input values
       title: this.initialValues.title || null,
       content: this.initialValues.content || null,
@@ -164,7 +186,7 @@ export default {
       // images
       imageUploading: false,
       // imageList: [],
-      imageList: this.initialValues.images || [
+      imageList: [
         {
           id: "1",
           url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
@@ -198,8 +220,19 @@ export default {
       selectedPlatform: "markdown",
     };
   },
+  computed: {
+    currentTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    },
+  },
   watch: {},
   methods: {
+    openAccountDialog() {
+      this.showAccountPanel = true;
+    },
     async saveAsDraft() {
       // console.log("save");
       //TODO: GET Data
@@ -239,6 +272,7 @@ export default {
           console.log("error");
         });
     },
+
     copyURL2Clipboard(image) {
       // navigator.clipboard 只能在安全环境中使用：localhost / https
       // navigator.clipboard
@@ -319,7 +353,10 @@ export default {
     },
 
     markdownRender() {
-      const result = this.md.render(this.content);
+      const tagsText = this.tags.map((tag) => "#" + tag).join(" ");
+
+      const result = this.md.render(tagsText + "\n\n" + (this.content || ""));
+
       this.renderedHtml = result;
     },
     changeSelectedPlatform(platform) {
