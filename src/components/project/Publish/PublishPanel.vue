@@ -1,17 +1,6 @@
 <template>
   <div class="panel-box">
-    <el-dialog
-      class="account-panel-card"
-      destroy-on-close
-      v-model="showAccountPanel"
-      :show-close="false"
-    >
-      <template #header>
-        <div class="title-box">
-          <h1 class="title">CHOOSE YOUR ACCOUNTS</h1>
-        </div>
-      </template>
-    </el-dialog>
+    <AccountSelecetBoard ref="accountSelectBoard"></AccountSelecetBoard>
     <div class="edit-box">
       <div class="other-box">
         <div class="title">
@@ -157,8 +146,12 @@
 <script>
 import MarkdownIt from "markdown-it";
 import { imgurUpload } from "@/services/imgur.js";
+import AccountSelecetBoard from "./AccountSelecetBoard.vue";
 
 export default {
+  components: {
+    AccountSelecetBoard,
+  },
   props: {
     initialValues: {
       type: Object,
@@ -175,8 +168,7 @@ export default {
   },
   data() {
     return {
-      //
-      showAccountPanel: false,
+      // showAccountPanel: false,
       // input values
       title: this.initialValues.title || null,
       content: this.initialValues.content || null,
@@ -231,7 +223,8 @@ export default {
   watch: {},
   methods: {
     openAccountDialog() {
-      this.showAccountPanel = true;
+      // this.showAccountPanel = true;
+      this.$refs.accountSelectBoard.showAccountPanel = true;
     },
     async saveAsDraft() {
       // console.log("save");
