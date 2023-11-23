@@ -92,7 +92,9 @@
         <BaseButton class="btn" @click="showAccountPanel = false"
           >Back</BaseButton
         >
-        <BaseButton class="btn confirm">Confirm</BaseButton>
+        <BaseButton class="btn confirm" @click="postPublish"
+          >Confirm</BaseButton
+        >
       </div>
     </template>
   </el-dialog>
@@ -100,6 +102,7 @@
 
 <script>
 export default {
+  emits: ["postPublish"],
   data() {
     return {
       showAccountPanel: false,
@@ -134,6 +137,11 @@ export default {
     },
   },
   methods: {
+    postPublish() {
+      const selectedIds = this.selectedAccounts.map((d) => d.id);
+      this.$emit("postPublish", selectedIds);
+      this.showAccountPanel = false;
+    },
     addSelectedAccount(value) {
       const index = this.unSelectedAccounts.findIndex(
         (info) => info.id === value.id

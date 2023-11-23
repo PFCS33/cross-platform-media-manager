@@ -1,4 +1,4 @@
-import { getData } from "@/services/fetchData";
+import { getData, postData } from "@/services/fetchData";
 
 export default {
   namespaced: true,
@@ -6,6 +6,7 @@ export default {
     return {
       plans: null, //  a hash map: (date, [{}, {}, ...])
       detailInfo: null,
+      publishState: null,
 
       planLoading: false,
       planError: {
@@ -18,6 +19,12 @@ export default {
         state: true,
         message: "",
       },
+
+      publishLoading: false,
+      publishError: {
+        state: true,
+        message: "",
+      },
     };
   },
   getters: {
@@ -26,6 +33,9 @@ export default {
     },
     detailInfo(state) {
       return state.detailInfo;
+    },
+    publishState(state) {
+      return state.publishState;
     },
 
     planLoading(state) {
@@ -40,6 +50,12 @@ export default {
     detailError(state) {
       return state.detailLoading;
     },
+    publishLoading(state) {
+      return state.publishLoading;
+    },
+    publishError(state) {
+      return state.publishError;
+    },
   },
   mutations: {
     setPlans(state, payload) {
@@ -47,6 +63,9 @@ export default {
     },
     setDetailInfo(state, payload) {
       state.detailInfo = payload;
+    },
+    setPublishState(state, payload) {
+      state.publishState = payload;
     },
 
     setPlanLoading(state, payload) {
@@ -60,6 +79,12 @@ export default {
     },
     setDetailError(state, payload) {
       state.detailError = payload;
+    },
+    setPublishLoading(state, payload) {
+      state.publishLoading = payload;
+    },
+    setPublishError(state, payload) {
+      state.publishError = payload;
     },
   },
   actions: {
@@ -76,7 +101,18 @@ export default {
 
       getData(url, JWTToken, context, "detail");
     },
+    postPublish(context, payload) {
+      const JWTToken = context.rootGetters["auth/JWTToken"];
+      // const url = context.rootGetters["auth/baseUrl"] + "/publish/article";
+      const url = "http://127.0.0.1:5000" + "/wordpress_post";
+      const data = payload;
 
+      postData(url, data, JWTToken, context, "publish");
+    },
+
+    handlePublishData(context, payload) {
+      context.commit("setPublishState", true);
+    },
     handleDetailData(context, payload) {
       context.commit("setDetailInfo", payload);
     },

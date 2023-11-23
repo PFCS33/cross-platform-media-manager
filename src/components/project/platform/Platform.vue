@@ -171,10 +171,14 @@ export default {
       platformAdded: null,
       deleteDialogVisible: false,
       selectedAccount: null,
+      oauthWindow: null,
     };
   },
 
   computed: {
+    isAuth(newVal) {
+      return this.$store.getters["platform/isAuth"];
+    },
     loading() {
       return this.$store.getters["platform/loading"];
     },
@@ -325,27 +329,58 @@ export default {
           case "facebook":
             break;
           case "wordpress":
+            authURL =
+              "https://public-api.wordpress.com/oauth2/authorize?client_id=93076&redirect_uri=http://192.168.56.1:5173/redirect&response_type=code";
             break;
         }
 
-        const oauthWindow = window.open(authURL, "_blank");
-        window.addEventListener("message", (event) => {
-          if (event.origin !== "http://localhost:5173") return;
-          else {
-            if (event.data.status === "success") {
-              // 向 server 发送 code
-              this.$store.dispatch("platform/postAuthCode", {
-                code: event.data.code,
-                platform: platform,
-              });
-            }
-          }
-        });
+        this.oauthWindow = window.open(authURL, "_blank");
       }
+    },
+    setupEventListener() {
+      this.messageEventListener = (event) => {
+        if (event.origin !== "http://192.168.56.1:5173") return;
+        if (event.data.status === "success") {
+          // 向 server 发送 code
+          // this.$store.dispatch("platform/postAuthCode", {
+          //   code: event.data.code,
+          //   platform: this.platformAdded,
+          // });
+          // add new accounts
+
+          const newAccounts = this.accountList.map((d) => ({ ...d }));
+          newAccounts.push({
+            id: 111,
+            name: "test",
+            platform: "wordpress",
+            isLogin: true,
+          });
+          this.$store.commit("platform/setAccountList", newAccounts);
+          this.$store.commit("platform/setIsAuth", true);
+          this.$store.dispatch("platform/handleData", newAccounts);
+          ElMessage.success("Authorizaion done");
+
+          if (this.oauthWindow) {
+            this.oauthWindow.close();
+            this.oauthWindow = null;
+          }
+        }
+      };
+      window.addEventListener("message", this.messageEventListener);
+    },
+    teardownEventListener() {
+      window.removeEventListener("message", this.messageEventListener);
     },
   },
   mounted() {
-    this.$store.dispatch("platform/getAccountInfo");
+    console.log(this.isAuth);
+    if (!this.isAuth) {
+      this.$store.dispatch("platform/getAccountInfo");
+    }
+    this.setupEventListener();
+  },
+  beforeDestroy() {
+    this.teardownEventListener();
   },
 };
 </script>

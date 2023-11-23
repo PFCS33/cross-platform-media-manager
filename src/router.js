@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import store from "./store/index.js";
 
 import MainPage from "@/views/MainPage.vue";
@@ -15,9 +15,10 @@ import HistoryPage from "@/components/project/History.vue";
 import StatisticPage from "./components/project/Statistic.vue";
 import DraftPage from "@/components/project/DraftBot.vue";
 import ConfigPage from "./components/project/config/Config.vue";
+import { ElMessage } from "element-plus";
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     {
       path: "/",
@@ -107,21 +108,23 @@ router.beforeEach(function (to, from, next) {
     (record) => record.meta.requiredUnAuth
   );
 
-  if (requiredAuth && !store.getters["auth/isLogin"]) {
-    next("/auth/login");
-  } else if (requiredUnAuth && store.getters["auth/isLogin"]) {
-    next("/main");
-  } else if (to.path === "/redirect") {
+  if (to.path === "/redirect") {
     const code = to.query.code;
-    window.opener.postMessage(
-      { status: "success", code: code },
-      "http://localhost:5173/cross-platform-media-manager/#/main/platform"
-    );
-    window.close();
+
+    if (window.opener && !window.opener.closed && window !== window.opener) {
+      window.opener.postMessage(
+        { status: "success", code: code },
+        "http://192.168.56.1:5173" // 父窗口的原点
+      );
+    }
+
     // store.dispatch("platform/postAuthCode", {
     //   code: code,
     // });
-    // next("/main/platform");
+  } else if (requiredAuth && !store.getters["auth/isLogin"]) {
+    next("/auth/login");
+  } else if (requiredUnAuth && store.getters["auth/isLogin"]) {
+    next("/main");
   } else {
     next();
   }

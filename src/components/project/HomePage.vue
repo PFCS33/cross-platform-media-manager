@@ -156,11 +156,12 @@ export default {
       padding: 0.6rem 3rem 0.6rem 2rem;
 
       gap: 2rem;
-      background-color: $secondary-color-dark;
+      background-color: $background-color;
       border-radius: 1rem;
 
       .avatar-box {
-        border: 0.6rem solid $background-color-gray;
+        border: 0.6rem solid $secondary-color;
+        background-color: $secondary-color-dark;
         border-radius: 1.2rem;
         overflow: hidden;
         .avatar {
@@ -177,11 +178,11 @@ export default {
           align-items: end;
           .title {
             font-size: 4.3rem;
-            color: $background-color;
+            color: $secondary-color;
           }
           .name {
             font-size: 3.2rem;
-            color: $primary-color;
+            color: $secondary-color-dark;
           }
         }
 
@@ -194,7 +195,7 @@ export default {
             @include flex-box(row);
             gap: 0.6rem;
             font-size: 1.8rem;
-            color: $background-color-gray;
+            color: $secondary-color-dark;
 
             .strong {
               font-weight: $font-weight-bold;
@@ -203,7 +204,7 @@ export default {
 
           .brand {
             font-size: 3rem;
-            color: $third-color-light;
+            color: $third-color;
             font-weight: $font-weight-bold;
             font-style: italic;
           }

@@ -34,6 +34,7 @@
         :selectedDay="selectedDay"
         :selectedTime="selecedAccurateTime"
         ref="publishPanel"
+        @closeWindow="showEditPanel = false"
       ></PublishPanel>
       <template #footer>
         <span class="dialog-footer">
@@ -242,7 +243,6 @@ export default {
       return `${hours}:${minutes}`;
     },
     publishPost() {
-      console.log(this.$refs.publishPanel);
       this.$refs.publishPanel.openAccountDialog();
       //TODO: GET Data
       // const content =

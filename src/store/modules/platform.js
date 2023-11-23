@@ -8,6 +8,7 @@ export default {
       accountList: null, // orginal list data
       logoutState: null,
       deleteState: null,
+      isAuth: false,
 
       loading: false,
       error: {
@@ -30,6 +31,9 @@ export default {
     };
   },
   getters: {
+    isAuth(state) {
+      return state.isAuth;
+    },
     selectedPlatform(state) {
       return state.selectedPlatform;
     },
@@ -66,6 +70,9 @@ export default {
     },
   },
   mutations: {
+    setIsAuth(state, payload) {
+      state.isAuth = payload;
+    },
     setSelectedPlatform(state, payload) {
       state.selectedPlatform = payload;
     },

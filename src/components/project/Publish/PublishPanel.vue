@@ -1,6 +1,9 @@
 <template>
-  <div class="panel-box">
-    <AccountSelecetBoard ref="accountSelectBoard"></AccountSelecetBoard>
+  <div class="panel-box" v-loading="publishLoading">
+    <AccountSelecetBoard
+      @postPublish="handleFinalPostPublish"
+      ref="accountSelectBoard"
+    ></AccountSelecetBoard>
     <div class="edit-box">
       <div class="other-box">
         <div class="title">
@@ -149,6 +152,7 @@ import { imgurUpload } from "@/services/imgur.js";
 import AccountSelecetBoard from "./AccountSelecetBoard.vue";
 
 export default {
+  emits: ["closeWindow"],
   components: {
     AccountSelecetBoard,
   },
@@ -219,9 +223,51 @@ export default {
       const minutes = String(now.getMinutes()).padStart(2, "0");
       return `${hours}:${minutes}`;
     },
+    publishState() {
+      return this.$store.getters["publish/publishState"];
+    },
+    publishLoading() {
+      return this.$store.getters["publish/publishLoading"];
+    },
+    publishError() {
+      return this.$store.getters["publish/publishError"];
+    },
   },
-  watch: {},
+  watch: {
+    publishState(newVal) {
+      if (true) {
+        this.$emit("closeWindow", null);
+      }
+    },
+    publishError(newVal) {
+      if (newVal.state) {
+        ElMessage.error(`Error: ${newVal.message}`);
+        setTimeout(() => ElMessage.error("Please try again"), 500);
+      } else {
+        ElMessage.success(`${newVal.message}`);
+      }
+    },
+  },
   methods: {
+    handleFinalPostPublish(selectedIds) {
+      this.$store.commit("publish/setPublishState", null);
+      // get all data
+      const selectedTime = this.selectedTime || this.currentTime;
+      const scheduled_time = this.selectedDay + " " + selectedTime;
+      const title = this.title;
+      const content = this.content;
+      const tags = this.tags;
+
+      // post
+      const data = {
+        content: content,
+        title: title,
+        tags: tags,
+        username: "test",
+        password: "test",
+      };
+      this.$store.dispatch("publish/postPublish", data);
+    },
     openAccountDialog() {
       // this.showAccountPanel = true;
       this.$refs.accountSelectBoard.showAccountPanel = true;
@@ -344,11 +390,15 @@ export default {
         this.$refs.imageInputRef.value = "";
       }
     },
+    combineTgasWithContent(tags, content) {
+      const tagsText = this.tags.map((tag) => "#" + tag).join(" ");
+      return tagsText + "\n\n" + (this.content || "");
+    },
 
     markdownRender() {
-      const tagsText = this.tags.map((tag) => "#" + tag).join(" ");
-
-      const result = this.md.render(tagsText + "\n\n" + (this.content || ""));
+      const result = this.md.render(
+        this.combineTgasWithContent(this.tags, this.content)
+      );
 
       this.renderedHtml = result;
     },
