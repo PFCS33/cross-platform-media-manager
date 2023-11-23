@@ -39,6 +39,43 @@ async function fetchAuthData(url, payload, context) {
   }
 }
 
+async function deleteData(url, JWTToken, context, mode = null) {
+  const handlerName = `handle${mode ? capitalizeFirstLetter(mode) : ""}Data`;
+  const loadingName = `set${mode ? capitalizeFirstLetter(mode) : ""}Loading`;
+  const errorName = `set${mode ? capitalizeFirstLetter(mode) : ""}Error`;
+
+  try {
+    context.commit(loadingName, true);
+
+    let response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + JWTToken,
+      },
+    });
+    let responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message);
+    } else {
+      context.commit(errorName, {
+        state: false,
+        message: responseData.message ? responseData.message : "succeeded",
+      });
+      context.commit(loadingName, false);
+
+      context.dispatch(handlerName, responseData.data);
+    }
+  } catch (error) {
+    context.commit(errorName, {
+      state: true,
+      message: error.message,
+    });
+    context.commit(loadingName, false);
+    console.error("error:", error.message);
+  }
+}
+
 async function postData(url, payload, JWTToken, context, mode = null) {
   const handlerName = `handle${mode ? capitalizeFirstLetter(mode) : ""}Data`;
   const loadingName = `set${mode ? capitalizeFirstLetter(mode) : ""}Loading`;
@@ -64,7 +101,9 @@ async function postData(url, payload, JWTToken, context, mode = null) {
     } else {
       context.commit(errorName, {
         state: false,
-        message: responseData.message ? responseData.message : "load succeeded",
+        message: responseData.message
+          ? responseData.message
+          : "upload succeeded",
       });
 
       context.commit(loadingName, false);
@@ -117,4 +156,4 @@ async function getData(url, JWTToken, context, mode = null) {
   }
 }
 
-export { fetchAuthData, getData, postData };
+export { fetchAuthData, getData, postData, deleteData };

@@ -138,11 +138,11 @@ export default {
   @include flex-box(column);
 
   .user-box {
-    margin-top: 1.3rem;
+    margin-top: 2rem;
     padding: 0rem 4rem;
     user-select: none;
     // border: 1px solid red;
-    flex: 0 1 30%;
+    flex: 0 1 28%;
     max-height: 30%;
     @include flex-box(row);
     // justify-content: space-between;
@@ -153,7 +153,7 @@ export default {
       @include flex-box(row);
       align-items: center;
       justify-content: start;
-      padding: 1rem 3rem 1rem 2rem;
+      padding: 0.6rem 3rem 0.6rem 2rem;
 
       gap: 2rem;
       background-color: $secondary-color-dark;
@@ -164,8 +164,8 @@ export default {
         border-radius: 1.2rem;
         overflow: hidden;
         .avatar {
-          width: 13rem;
-          height: 13rem;
+          width: 12rem;
+          height: 12rem;
         }
       }
       .slogan-box {
@@ -190,6 +190,7 @@ export default {
           align-items: center;
           gap: 1rem;
           .words {
+            // background-color: $background-color-gray;
             @include flex-box(row);
             gap: 0.6rem;
             font-size: 1.8rem;
@@ -244,10 +245,10 @@ export default {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 2rem;
     align-items: center;
     justify-items: center;
-    padding: 1.8rem 4rem;
+    padding: 3rem 4rem;
 
     .func-box {
       width: 100%;
@@ -270,12 +271,12 @@ export default {
       }
 
       .img-box {
-        padding: 0.3rem;
+        padding: 0 0.6rem;
         @include flex-center(row);
         border: 0.6rem solid $background-color-gray;
         border-radius: 1.2rem;
         .icon {
-          @include icon-style(7rem, $primary-color);
+          @include icon-style(5rem, $primary-color);
         }
       }
       .info-box {
@@ -299,6 +300,8 @@ export default {
             font-size: 1.3rem;
             color: $background-color-gray;
             word-wrap: break-word;
+            // padding: 1rem;
+            padding-right: 3rem;
           }
         }
       }

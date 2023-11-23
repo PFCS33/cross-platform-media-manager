@@ -205,3 +205,18 @@
     transition: transform 0.1s ease-out, opacity 0.1s ease-out !important;
   }
 }
+
+@mixin fade-animation() {
+  .fade-enter-active {
+    transition: opacity 0.3s;
+  }
+  .fade-leave-active {
+    position: absolute;
+  }
+  .fade-enter-from, .fade-leave-to, .fade-leave-from /* .fade-leave-active 在 Vue 2.1.8+ 中 */ {
+    opacity: 0;
+  }
+  .fade-enter-to /* .fade-enter-active 在 Vue 2.1.8+ 中 */ {
+    opacity: 1;
+  }
+}

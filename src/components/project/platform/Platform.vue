@@ -1,5 +1,5 @@
 <template>
-  <div class="box" v-loading="loading">
+  <div class="box" v-loading="loading || deleteLoading || logoutLoading">
     <div class="toolbox">
       <div
         @click="changeSelectedPlatform('overview')"
@@ -96,7 +96,7 @@
                 <BaseButton class="button forward">Login</BaseButton>
                 <BaseButton
                   class="button backward"
-                  @click="confirmAccountDelete"
+                  @click="confirmAccountDelete(info)"
                   >Delete</BaseButton
                 >
               </div>
@@ -170,6 +170,7 @@ export default {
       platforms: ["weibo", "x", "facebook", "wordpress"],
       platformAdded: null,
       deleteDialogVisible: false,
+      selectedAccount: null,
     };
   },
 
@@ -180,6 +181,29 @@ export default {
 
     error() {
       return this.$store.getters["platform/error"];
+    },
+
+    deleteLoading() {
+      return this.$store.getters["platform/deleteLoading"];
+    },
+    deleteError() {
+      return this.$store.getters["platform/deleteError"];
+    },
+    logoutLoading() {
+      return this.$store.getters["platform/logoutLoading"];
+    },
+    logoutError() {
+      return this.$store.getters["platform/logoutError"];
+    },
+
+    deleteState() {
+      return this.$store.getters["platform/deleteState"];
+    },
+    logoutState() {
+      return this.$store.getters["platform/logoutState"];
+    },
+    accountList() {
+      return this.$store.getters["platform/accountList"];
     },
     displayedAccounts() {
       const platform = this.selectedPlatform;
@@ -208,7 +232,40 @@ export default {
     },
   },
   watch: {
+    deleteState(newVal) {
+      if (newVal) {
+        const newAccounts = this.accountList.filter(
+          (info) => info.id !== this.selectedAccount.id
+        );
+        this.$store.commit("platform/setAccountList", newAccounts);
+
+        this.$store.dispatch("platform/handleData", newAccounts);
+
+        this.deleteDialogVisible = false;
+      }
+    },
+    logoutState(newVal) {
+      if (newVal) {
+        this.selectedAccount.isLogin = false;
+      }
+    },
     error(newVal) {
+      if (newVal.state) {
+        ElMessage.error(`Error: ${newVal.message}`);
+        setTimeout(() => ElMessage.error("Please try again"), 500);
+      } else {
+        ElMessage.success(`${newVal.message}`);
+      }
+    },
+    deleteError(newVal) {
+      if (newVal.state) {
+        ElMessage.error(`Error: ${newVal.message}`);
+        setTimeout(() => ElMessage.error("Please try again"), 500);
+      } else {
+        ElMessage.success(`${newVal.message}`);
+      }
+    },
+    logoutError(newVal) {
       if (newVal.state) {
         ElMessage.error(`Error: ${newVal.message}`);
         setTimeout(() => ElMessage.error("Please try again"), 500);
@@ -219,14 +276,26 @@ export default {
   },
   methods: {
     deleteAccount() {
-      ElMessage.success("delete account successfully");
+      this.$store.commit("platform/setDeleteState", null);
+      this.$store.dispatch("platform/deleteAccount", {
+        id: this.selectedAccount.id,
+      });
+      // ElMessage.success("delete account successfully");
     },
-    confirmAccountDelete() {
+    confirmAccountDelete(info) {
+      this.selectedAccount = info;
       this.deleteDialogVisible = true;
     },
     logoutAccount(info) {
-      info.isLogin = false;
+      this.$store.commit("platform/setLogoutState", null);
+      this.$store.dispatch("platform/logoutAccount", {
+        id: info.id,
+      });
+      this.selectedAccount = info;
+
+      // info.isLogin = false;
     },
+
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },
