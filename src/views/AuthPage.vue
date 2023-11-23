@@ -6,8 +6,13 @@
   >
     <div class="half left">
       <BaseCard inset class="slogan">
-        <div>An</div>
-        <p class="hilight-sentence">all in one</p>
+        <div class="name-box">
+          <span class="name">SyncWave</span>
+        </div>
+        <div class="hilight-box">
+          <span>An </span>
+          <span class="hilight-sentence">all in one</span>
+        </div>
         <p class="long-sentence">
           social media manager, boosting your productivity with security
         </p>
@@ -79,9 +84,9 @@ export default {
       user-select: none;
       width: fit-content;
       height: fit-content;
-      padding: 4rem 2rem;
+      padding: 2rem 2rem 4rem 2rem;
       position: fixed;
-      top: 28%;
+      top: 25%;
       left: 3%;
       border-radius: 1.2rem;
       background-color: rgba($secondary-color-dark, 0.3);
@@ -91,12 +96,29 @@ export default {
       line-height: 1.2;
       text-shadow: 1rem 0.5rem 0.3rem $secondary-color-dark;
       letter-spacing: 0.15rem;
+      .name-box {
+        @include flex-box(row);
+        align-items: end;
+        .name {
+          color: $third-color-light;
+          font-size: 4.5rem;
+          font-weight: $font-weight-bold;
+          font-style: italic;
+        }
+        margin-bottom: 0.6rem;
+      }
+      .hilight-box {
+        @include flex-box(row);
+        // align-items:;
+        .hilight-sentence {
+          text-transform: uppercase;
+          font-size: 9rem;
+          color: $primary-color;
+          font-style: italic;
+        }
+      }
     }
-    .hilight-sentence {
-      text-transform: uppercase;
-      font-size: 9rem;
-      color: $primary-color;
-    }
+
     .long-sentence {
       width: 70%;
       word-wrap: break-word;

@@ -8,6 +8,7 @@ import NotFoundPage from "@/views/NotFoundPage.vue";
 
 import LoginCard from "@/components/auth/Login.vue";
 import SignupCard from "@/components/auth/Signup.vue";
+import HomePage from "@/components/project/HomePage.vue";
 import PlatformPage from "@/components/project/platform/Platform.vue";
 import PostPublishPage from "@/components/project/publish/PostPublish.vue";
 import HistoryPage from "@/components/project/History.vue";
@@ -51,6 +52,11 @@ const router = createRouter({
         requiredAuth: true,
       },
       children: [
+        {
+          path: "home",
+          component: HomePage,
+          name: "home",
+        },
         {
           path: "platform",
           component: PlatformPage,
