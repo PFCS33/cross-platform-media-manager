@@ -35,6 +35,8 @@
         :selectedDay="selectedDayString"
         :selectedTime="selecedAccurateTime"
         ref="publishPanel"
+        mode="draft"
+        @closeWindow="showEditPanel = false"
       ></PublishPanel>
       <template #footer>
         <span class="dialog-footer">
@@ -256,7 +258,13 @@ export default {
     },
   },
   mounted() {
-    this.$store.dispatch("draft/getDraftsInfo");
+    if (!this.isVisited) {
+      this.$store.dispatch("draft/getDraftsInfo");
+      this.$store.commit("draft/setIsVisited", true);
+    } else {
+      this.currentPageData = this.getPageDataByNumber(this.currentPage);
+      this.showContent = true;
+    }
     // this.testPost();
   },
   beforeDestroy() {
@@ -271,6 +279,9 @@ export default {
     },
     deleteResult() {
       return this.$store.getters["draft/deleteResult"];
+    },
+    isVisited() {
+      return this.$store.getters["draft/isVisited"];
     },
     loading() {
       return this.$store.getters["draft/draftsLoading"];
@@ -346,8 +357,15 @@ export default {
       let minutes = date.getMinutes().toString().padStart(2, "0");
       return `${hours}:${minutes}`;
     },
-    disabledDate(time) {
-      return time.getTime() < Date.now();
+    disabledDate(day) {
+      const today = new Date();
+      const todayDateOnly = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+      return new Date(day) < todayDateOnly;
+      // return time.getTime() < Date.now();
     },
     openEditPanel(id) {
       this.$store.dispatch("draft/getDetailInfo", { id: id });

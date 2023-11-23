@@ -169,6 +169,10 @@ export default {
       type: String,
       default: null,
     },
+    mode: {
+      type: String,
+      default: "publish",
+    },
   },
   data() {
     return {
@@ -236,6 +240,35 @@ export default {
   watch: {
     publishState(newVal) {
       if (true) {
+        let newPlans = this.$store.getters["publish/planList"].map((d) => ({
+          ...d,
+        }));
+        if (this.mode === "publish") {
+          this.$store.commit("publish/setIsPublished", true);
+
+          newPlans.push({
+            id: 111,
+            title: "Getting Start With Git",
+            time: "2023-11-23 19:30",
+            platforms: ["wordpress"],
+          });
+        } else if (this.mode === "draft") {
+          newPlans.push({
+            id: 333,
+            title: "I Successfully Defeated the Doctor",
+            time: "2023-11-23 19:35",
+            platforms: ["wordpress"],
+          });
+          const draftId = this.initialValues.id;
+          const newDraft = this.$store.getters["draft/drafts"].filter(
+            (d) => d.id !== draftId
+          );
+
+          this.$store.commit("draft/setDrafts", newDraft);
+        }
+
+        this.$store.commit("publish/setPlanList", newPlans);
+        this.$store.dispatch("publish/handlePlanData", newPlans);
         this.$emit("closeWindow", null);
       }
     },

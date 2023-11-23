@@ -5,8 +5,10 @@ export default {
   state() {
     return {
       plans: null, //  a hash map: (date, [{}, {}, ...])
+      planList: null,
       detailInfo: null,
       publishState: null,
+      isPublished: null,
 
       planLoading: false,
       planError: {
@@ -37,6 +39,12 @@ export default {
     publishState(state) {
       return state.publishState;
     },
+    planList(state) {
+      return state.planList;
+    },
+    isPublished(state) {
+      return state.isPublished;
+    },
 
     planLoading(state) {
       return state.planLoading;
@@ -66,6 +74,12 @@ export default {
     },
     setPublishState(state, payload) {
       state.publishState = payload;
+    },
+    setPlanList(state, payload) {
+      state.planList = payload;
+    },
+    setIsPublished(state, payload) {
+      state.isPublished = payload;
     },
 
     setPlanLoading(state, payload) {
@@ -118,6 +132,7 @@ export default {
     },
     handlePlanData(context, payload) {
       const data = payload;
+      context.commit("setPlanList", data);
       const dateMap = new Map();
       data.forEach((plan) => {
         const date = plan.time.split(" ")[0];

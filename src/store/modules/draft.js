@@ -7,6 +7,7 @@ export default {
       drafts: null,
       deleteResult: null,
       detail: null,
+      isVisited: null,
 
       draftsLoading: false,
       draftsError: {
@@ -36,6 +37,9 @@ export default {
     },
     deleteResult(state) {
       return state.deleteResult;
+    },
+    isVisited(state) {
+      return state.isVisited;
     },
 
     draftsLoading(state) {
@@ -68,6 +72,9 @@ export default {
     },
     setDeleteResult(state, payload) {
       state.deleteResult = payload;
+    },
+    setIsVisited(state, payload) {
+      state.isVisited = payload;
     },
 
     setDraftsLoading(state, payload) {

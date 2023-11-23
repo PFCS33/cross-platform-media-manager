@@ -191,6 +191,10 @@ export default {
     currentTime() {
       return this.formatTime(new Date());
     },
+
+    isPublished() {
+      return this.$store.getters["publish/isPublished"];
+    },
   },
   watch: {
     calendar_data(newVal) {
@@ -278,6 +282,7 @@ export default {
       this.$nextTick(() => {
         this.$store.dispatch("publish/getDetailInfo", { id: id });
       });
+      console.log(id);
     },
     openEditView(day) {
       this.selectedDay = day;
@@ -289,7 +294,11 @@ export default {
     },
   },
   mounted() {
-    this.$store.dispatch("publish/getPlanInfo");
+    if (!this.isPublished) {
+      this.$store.dispatch("publish/getPlanInfo");
+    } else {
+      this.showCalendar = true;
+    }
   },
 };
 </script>
