@@ -249,14 +249,15 @@ export default {
           newPlans.push({
             id: 111,
             title: "Getting Start With Git",
-            time: "2023-11-23 19:30",
+            time: "2023-11-23 22:42",
             platforms: ["wordpress"],
           });
         } else if (this.mode === "draft") {
+          // if(newPlans.)
           newPlans.push({
             id: 333,
             title: "I Successfully Defeated the Doctor",
-            time: "2023-11-23 19:35",
+            time: "2023-11-23 22:50",
             platforms: ["wordpress"],
           });
           const draftId = this.initialValues.id;

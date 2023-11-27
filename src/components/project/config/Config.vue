@@ -14,6 +14,9 @@
         <el-menu-item index="2">
           <span>Reset Password</span>
         </el-menu-item>
+        <el-menu-item index="3">
+          <span>Logout</span>
+        </el-menu-item>
       </el-menu>
     </div>
     <div class="form-container">
@@ -91,7 +94,9 @@
 
             <transition name="pull">
               <div class="button-box" v-if="editMode">
-                <BaseButton class="btn confirm">Summit</BaseButton>
+                <BaseButton class="btn confirm" @click="submitForm"
+                  >Submit</BaseButton
+                >
                 <BaseButton class="btn">Clear</BaseButton>
               </div>
             </transition>
@@ -134,7 +139,9 @@
               ></el-input>
             </div>
             <div class="button-box">
-              <BaseButton class="btn confirm">Summit</BaseButton>
+              <BaseButton class="btn confirm" @click="submitForm"
+                >Submit</BaseButton
+              >
               <BaseButton class="btn">Clear</BaseButton>
             </div>
           </div>
@@ -238,11 +245,25 @@ export default {
         this.$refs.imageInputRef.value = "";
       }
     },
+    submitForm() {
+      this.$store.commit("user/setInfoLoading", true);
+      setTimeout(() => {
+        this.editMode = false;
+        this.$store.commit("user/setInfoLoading", false);
+        ElMessage.success("success");
+        this.oldPassword = null;
+        this.newPassword = null;
+        this.confirmPassword = null;
+      }, 500);
+    },
     handleSelect(index) {
       if (index === "1") {
         this.activeComponent = "userInfo";
       } else if (index === "2") {
         this.activeComponent = "resetPassword";
+      } else if (index === "3") {
+        this.$store.commit("auth/setIsLogin", false);
+        this.$router.push({ name: "login" });
       }
     },
   },

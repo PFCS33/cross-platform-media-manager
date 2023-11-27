@@ -48,7 +48,7 @@ const router = createRouter({
     {
       path: "/main",
       component: MainPage,
-      redirect: "/main/platform",
+      redirect: "/main/home",
       meta: {
         requiredAuth: true,
       },

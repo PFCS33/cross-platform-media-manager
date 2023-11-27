@@ -8,7 +8,7 @@ export default {
       // baseUrl: "http://127.0.0.1:5000",
       baseUrl: "http://127.0.0.1:4523/m1/3581187-0-default",
       // 登录状态标记
-      isLogin: true,
+      isLogin: false,
       // communication state
       loading: false,
       error: {
